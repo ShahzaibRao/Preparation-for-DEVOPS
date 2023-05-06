@@ -1,0 +1,460 @@
+
+Getting Help & Man Pages in Linux | Command Details & Help
+
+---------------
+	ChatGPT
+---------------
+
+Command syntex
+#commad [options] and the <arguments>
+
+man (Manual)
+man cat 
+man route
+man lsblk
+
+lsblk -f
+
+man rsyslog.conf
+man sshd
+
+man command ki madad se apk kesi b file or service se realted infoation dekh sakty hain
+
+agr ap just kesi commad ka description dekhna chahty hain tu whatis ka use karskty hian 
+$whatis route
+
+agr ap ye dekhna chahty hain k kesi b commad ka mannual  kahan per  hai system m 
+$whereis route
+mandb
+whatis route
+whatis lsblk
+
+agr hum kesi manula ka perticular page dekhnachahity hian tu hum man -S use krn gy
+man 5 passwd
+man man
+
+agr ap just help lene chahity hai kesi commd ka tu ap --help use krn gy commd k bad
+cat --help
+
+-----------------------------------------------------------------------------------
+						Manage Directories
+------------------------------------------------------------------------------------
+pwd =current working directory
+cd =chnage directory
+cd ~ go user home directory
+cd - Go back your previous directory
+cd . representr currrtent directory 
+cd .. represent previous directory 
+
+autopath complition type your first letter of file or directory and press TAB
+ls
+ls -a
+ls -lh
+
+mkdir folderA
+mkdir folderA
+mkdir -p folderA/FolderB/FolderC
+
+mkdir folderD
+rm folderD
+
+rm -r folderA/FolderB/FolderC 
+
+you can set your own alias
+alias
+cat > date
+cat date
+rm -i date
+unalias rm 
+alias
+rm date
+
+id you want to run multiple commands you need to type ; at the end of each commad
+
+------------------------------------------------------------------------------------------
+								Working With Files In Linux
+------------------------------------------------------------------------------------------
+chatGPT
+
+Linux is case sensitive
+touch Linux
+touch linux
+ls -li
+
+linux main har ek cheez ko file roop concider kiya jata hai 
+su -
+ls
+ls -l
+directories are special type of file
+ager main yahan link file create kr den tu 
+ln falename  falename
+ls -l
+
+ab yahan per ek soft link create kr deta hn 
+ln -s falename  falename
+ls -l
+lsblk
+ye system ki  block devices hain jo file surat m consider ki gai hai
+1s -l /dev/sda
+cat /dev/sda
+
+agr hum ye dekhna chahiye ye file kis chezz se related hai tu ap k mind m aaye ga hum file ki extention dekh kr bata skty hain per ye such nhi hai 
+
+cat > date.txt
+cat date.txt
+file date.txt
+cat > date.jpeg
+file  date.jpeg
+
+
+file /dev/sda
+file /proc/cpuinfo
+cat /proc/cpuinfo
+
+touch {1..100}.txt
+time stemp modify 
+touch Filename
+touch -t 201005100615 Filename
+ls -l
+rm Filename 
+rm -rf *.txt
+
+
+-------------------------------------------------------------------------------------
+								Working With File Contents 
+-------------------------------------------------------------------------------------
+cat /etc/passwd
+head /etc/passwd
+head -8 /etc/passwd
+tail /etc/passwd
+tail -5 /etc/passwd
+cat > FileName.txt
+Welcome to my world
+ls FileName.txt
+cat FileName.txt
+cat > Filenmae.txt
+
+suer >> to save data
+cat >> FileNmae.txt
+welcome back 
+cat FileName
+
+echo "welcome to my world"
+echo "welcome to my world" >file.txt
+
+Custom and Marker
+cat > file.txt <<EFO
+one
+two
+three
+EFO
+
+cat file.txt
+cat file.txt
+
+agr mujhe result ko reverse order m dekha hai tu 
+tac file.txt
+
+cd /var/log
+ls -l message
+cat message
+
+agr main reslut ko line by line dekhn hai tu use more
+more message
+less message
+
+cd /bin
+ls
+cat zsh
+strings zsh
+
+
+
+---------------------------------------------------------------------
+								 Commands & Arguments
+---------------------------------------------------------------------
+
+echo Hello world
+echo Hello           world 
+
+ye is liye hwa shell expansion kaam kr rhi hai 
+echo 'Hello      world'
+echo "Hello      world"
+Yahan hum shell ko bata diya hai uesy expandion ko use nhi krna 
+
+Linux main 2 tarhan k varibale hoty hain "System variubales" and "userdefine Varibales"
+
+echo $SHELL
+
+var1=100
+echo var1
+echo 'var1'
+echo "var1"
+espical excaping character 
+echo -e "welcome \n to \t linux"
+
+
+Shell builtin commad and external commad 
+jo commds shell k ander e define hti hn unko shell built in commad kehty hain ko bin. ya sbin define hti hain unhn external commds kehty hain 
+cd Commds is shell build in commad
+type cd
+type ls
+which ls
+
+agr ap extenel commands ko run krwa rhy hain to jo ap k environment varibals hain un k andr unki entry ho chahiye otherwise apko uski complete location ka path dalna hoga
+which ls
+
+/usr/bin/ls /tmp
+
+
+cat fileName
+alias cat=dog
+dog fileName
+alias
+unalias dog
+alias 
+alias dog
+fog fileName
+
+
+ap set -x ki madad se shell expension ka out b dekh skty hain 
+date
+set -x
+date
+set +x
+
+yahan se ap dekh skty hain shell apki commd k sth kia kr rhi hai
+hostname
+
+
+
+
+-----------------------------------------------------------------------------
+								Control Operators in Linux
+------------------------------------------------------------------------------
+ChatGPT
+
+# ;
+agr hume multiple commd ko execture krna tu hum ; use krty hain
+date; pwd; cal
+echo Hell; echo world
+# & 
+date & pwd 
+sleep 10
+sleep 10; date
+sleep 20 & date
+
+; selraily execture krwata hai commds ko jab k & paralaly execute krwata hai commds ko 
+
+# ?
+actualy ye ek variable hai jo apne andr ek value ko store krta hai wo value depend krti hai previous comnmd k executaion per 
+agr hamrai previously execute hgi tu ? = 0 k andr 0 value store ho jaye gi . agr prevoius commd sucessfully execute nhi hti tu apne andr ko random value ko store kr ly ga
+
+echo $pwd
+echo $USER
+echo $?
+zacall
+echo $?
+
+
+# && logical and 
+echo hello && echo world
+zcho hello && echo world
+
+# ||
+echo hello || echo world
+zcho hello || echo world
+
+# && and ||
+touch file1
+ls -l file1
+rm file1 && echo Its worked || echo IT failed!
+rm file1 && echo Its worked || echo IT failed!
+
+# #
+agrnore by shell
+echo hello wold > file.txt
+echo "#hello wolrd" >file.txt
+sh file.txt
+
+echo This is Linux \
+> calss \
+> start new wolrd
+
+apt get update \
+> && apt get upgrate \
+> apt get install python3
+
+
+------------------------------------------------------------------------
+						 Shell Variables in Linux
+------------------------------------------------------------------------
+
+#shell variables
+Two Typs of Variables
+1 system define varibales
+2 User define variables
+echo $PWD
+echo $SHELL
+echo $HOTNAME
+echo $USER
+set is use for see how many variables are set in Linux
+var1=555
+echo $var1
+unset var1
+echo $var1
+
+echo $PS1
+zsh 
+echo $PS1
+
+PS1= "Touch me :"
+echo $PS1
+vi .bashrc
+
+
+PATH varibale
+ls
+ hum b commd tyoe krty hain wo directly execute ho jari hai,, system ko kesy pata hai ye sb 
+which
+ jab hum koi commd run krty hain system PATH varible ki madad se us commd ki binary k zariye ius commd ko execute krwata hai 
+
+echo $PATH
+
+
+EVN
+is ki madad se hum exported varibale ka pata kr skty hain 
+bash -c 'echo $SHELL $HOME' $USER
+env -i bash -c 'echo $SHELL $HOME' $USER
+touch Filea FileB Filec
+evn LANG=C bash -c 'ls File[a-z]'
+
+evn LANG=en_US.UFT -8bash -c 'ls File[a-z]'
+echo $SHLVL
+bash
+echo $SHLVL
+
+agry hume apne varibale ko different sehll m export krn ho
+var1= one
+var2= two
+echo var2
+export var2
+zsh
+echo $var1 $var2
+
+sh
+echo $var1 $var2
+exit
+export var1
+zsh
+echo $var1 $var2
+sh
+echo $var1 $var2
+
+Delenaite varibales
+prefix=Super
+echo $prefix
+echo Hello $prefixman and $prefixgirl
+
+echo Hello ${prefix}man and ${prefix}girl
+
+
+INBOUND Varibales
+echo $MayVar
+set -u 
+echo $MayVar
+
+MayVar=22
+echo $MayVar
+set +u 
+echo $MayVar
+
+
+
+
+------------------------------------------------------------------------------------
+							 Shell Embedding, Options & Shell History 
+------------------------------------------------------------------------------------
+ChatGPT
+Shell embaded
+echo $var1
+echo $(var1=5;echo $var1)
+A= shell
+echo $A
+
+nested shell
+echo $C$B$A $(B=sub;echo $C$B$A;echo $(C=sub;echo $C$B$A))
+echo $A
+echo $B
+echo $C
+
+BACKTICS
+cd /etc
+ls -d pass*
+echo `cd /etc; l s-d * | grep pass`
+
+echo `var1=5; echo $var1`
+echo $(var1=5; echo $var1)
+echo 'var1=5; echo $var1'
+echo "var1=5; echo $var1"
+
+
+Shell Options
+echo $-
+set -C; set -u
+echo $-
+set -C; set +u
+echo $-
+set -x
+echo $-
+
+
+SHELL History
+history
+echo im new here
+use up arrow
+!!
+touch file34
+rm file34
+!to
+history 10
+histiry -c
+cal
+date 
+ls 
+!3
+agr ap hisroty m se kesi commd ko search krna chahty hain tu ap control + r press krn ..... cal
+
+Histsize show the number b store 
+echo $ HISTSIZE
+HISTSIZE=5000
+apki commd history kahan  save ho rhi hai 
+echo $HISTFILE
+echo $HISTFILESIZE
+
+agr ap commd ko histiry m jane se rokna chahty hain to
+cal 
+hoistory 
+use space before commad
+ cal
+history
+
+----------------------------------------------------------------------------------------
+								 File Globbing in Linux
+----------------------------------------------------------------------------------------
+touch fileA fileB fileC fileD FileA FileB FileC File1 File2 File3 File25 FileRR Filez5 Filef2
+ls File* File25 File25
+ls file*
+ls *ile*
+ls *ile3
+ls f*A
+ls File?
+ls File??
+ls File[5A]
+ls File[BR][a2]
+ls File[a-z]*
+ls file[a-z][a-z][0-9]
+echo $LANG
+LANG=C
+echo $LANG
+echo *
