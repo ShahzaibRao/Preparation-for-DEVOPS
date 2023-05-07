@@ -37,7 +37,7 @@ agr ap just help lene chahity hai kesi commd ka tu ap --help use krn gy commd k 
 cat --help
 
 -----------------------------------------------------------------------------------
-						Manage Directories
+				Manage Directories
 ------------------------------------------------------------------------------------
 pwd =current working directory
 cd =chnage directory
@@ -72,7 +72,7 @@ rm date
 id you want to run multiple commands you need to type ; at the end of each commad
 
 ------------------------------------------------------------------------------------------
-								Working With Files In Linux
+				Working With Files In Linux
 ------------------------------------------------------------------------------------------
 chatGPT
 
@@ -121,7 +121,7 @@ rm -rf *.txt
 
 
 -------------------------------------------------------------------------------------
-								Working With File Contents 
+			Working With File Contents 
 -------------------------------------------------------------------------------------
 cat /etc/passwd
 head /etc/passwd
@@ -171,7 +171,7 @@ strings zsh
 
 
 ---------------------------------------------------------------------
-								 Commands & Arguments
+		 Commands & Arguments
 ---------------------------------------------------------------------
 
 echo Hello world
@@ -230,7 +230,7 @@ hostname
 
 
 -----------------------------------------------------------------------------
-								Control Operators in Linux
+		Control Operators in Linux
 ------------------------------------------------------------------------------
 ChatGPT
 
@@ -287,7 +287,7 @@ apt get update \
 
 
 ------------------------------------------------------------------------
-						 Shell Variables in Linux
+		 Shell Variables in Linux
 ------------------------------------------------------------------------
 
 #shell variables
@@ -373,7 +373,7 @@ echo $MayVar
 
 
 ------------------------------------------------------------------------------------
-							 Shell Embedding, Options & Shell History 
+		 Shell Embedding, Options & Shell History 
 ------------------------------------------------------------------------------------
 ChatGPT
 Shell embaded
@@ -440,7 +440,7 @@ use space before commad
 history
 
 ----------------------------------------------------------------------------------------
-								 File Globbing in Linux
+				 File Globbing in Linux
 ----------------------------------------------------------------------------------------
 touch fileA fileB fileC fileD FileA FileB FileC File1 File2 File3 File25 FileRR Filez5 Filef2
 ls File* File25 File25
