@@ -1,0 +1,249 @@
+
+----------------------------------------------
+     Managing Users in RHEL 8 
+------------------------------------------------
+who am i 
+whoami
+w
+id
+id zybitail 
+su switch user
+su username 
+su root
+su -
+exit
+pwd
+su -root
+
+
+------------------------------------------------------------------
+            Groups Management in Linux 
+-----------------------------------------------------------------
+
+#primary 
+#secondary 
+tail -4 /etc/passwd
+tail -4 /etc/group
+useradd amit
+tail -1 /etc/passwd
+tail -1 /etc/group
+groups
+groups zybi
+groups hamza
+id
+id amit
+groupdadd developer
+tail -2 /etc/group
+grep developer /etc/passwd
+usermod -a -G developer zybi
+id zybi
+groups zybi
+cat /etc/passwd |grep zybi
+vim /etc/group
+cat /etc/group/ |grep zybi
+
+change primary group 
+usermode -g developer zybi
+grep amit /etc/passwd
+
+name name group 
+groupmod -n tester developer
+tail -3 /etc/group
+
+groupdel tester
+usermode -g zybizybi
+groupdel tester
+
+give permision to suer add more admin 
+
+greupadd unix
+usermode -a -G unix zybi
+tail -2 /etc/passwd
+gpasswd -A zybi unix
+su - zybi
+gpasswd -a hamza unix
+tail -3 /etc/group
+
+remove user from group
+su zybi
+tail -3 /etc/group
+gpasswd -d hamza
+
+
+remove all admin froim group
+su -
+gpasswd -A "" unix
+
+newgrp
+echo $SHLVL
+
+---------------------------------------------------------------------
+	    File Security in Linux | Standard File Permissions
+----------------------------------------------------------------------
+umask -S
+umask 0077
+umask 0022
+umask -S u=rwx,g=r,o=rx
+
+
+StickyBIt
+mkdir /text
+chmod 777
+ls ld
+cd test
+su zybi 
+cal > cal.txt
+ls -l cal.txt
+
+su hamza
+ls -l
+rm cal.txt
+
+su -
+chmod +t /text
+ls -ld /test/
+
+su zybi 
+cal > cal.txt
+ls -l cal.txt
+
+su hamza
+ls -l
+rm cal.txt
+
+
+
+Set gid
+cd /tmp
+groupadd proj55
+mkdir proj55
+ls -ld proj55
+
+chown root:proj55 proj55
+ls -ld proj55
+
+cd /proj55
+chmod 777 /tmp/proj55
+
+su zybi
+cal > cal.txt
+ll
+su -
+chmod 2777 /tmp/proj55
+
+ls -ld /proj55
+
+su zybi
+cal > cal22.txt
+ll
+
+Remove gBIt
+su -
+chmod g-s /tmp/proj55
+
+ADD  gBIt
+chmod g+s /tmp/proj55
+
+Find all gBIT filfes
+find / -type d  -oerm -2000 2> /dev/null
+
+ADD  SUidBIt
+touch cal.sh
+chmod u+s /tmp/proj55/cal.sh
+
+Remove  SUidBIt
+chmod u-s /tmp/proj55/cal.sh
+
+
+--------------------------------------
+      Manage ACLs in RHEL 8
+-----------------------------------------
+cal > cal.txt
+getfacl cal.txt
+
+setfacl -m u:zybi:4 cal.txt
+ll
+getfacl cal.txt
+su zybi 
+cat cal.txt
+
+su -
+setfacl -m g:unix:7 cal.txt
+getfacl cal.txt
+
+
+su zybi 
+vi cal.txt
+
+su -
+getfacl cal.txt
+setfacl -x zybi al.txt
+getfacl cal.txt
+
+setfacl -m g:developer:7 cal 
+
+remove ACL from file
+setfacl -b cal.txt
+ll
+-----------------------------------------------
+          Managing Processes
+-----------------------------------------------
+
+pstree
+jobs
+sleep 200 &
+kill psID
+ps fx | greep sleep
+top
+for kill press k nad type id
+kill -l
+kill -1 1
+echo $?
+sleep 100 &
+kill ID
+sleep 100& 
+kill -15 ID
+
+kill by kernerl 
+kill -9 ID
+sleep 120 &
+kill -9 ID
+ps -C sleep 
+sleep 120 &
+sleep 120 &
+kill id
+kill -9 ID
+ps -C sleep 
+
+
+system call chcek 
+sleep 120 &
+strace -p ID
+jobs
+kill -9 id
+strace -p ID
+
+start ot stop  process
+kill -l
+sleep 140 &
+for stop
+kill -19 ID 
+for start
+kill 18 ID
+
+jobs
+
+sleep 160 &
+pkill sleep 
+jobs
+ps -C sleep
+
+multiple ps kill 
+
+killall sleep top 
+jobs
+sleep 130 &
+sleep 120
+
+jobs
+fg 1
