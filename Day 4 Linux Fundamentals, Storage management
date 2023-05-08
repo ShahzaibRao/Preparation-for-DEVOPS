@@ -1,0 +1,210 @@
+
+--------------------------------------------------------------------------------------
+      Disk Management in Linux | Managing Storage in RHEL 8 
+-----------------------------------------------------------------------------------------
+lsblk
+fdisdk -l 
+dmesg
+lsscsi 			list SCSI devices (or hosts), list NVMe devices
+lshw  			list hardware
+cat /proc/scsi/scsi
+
+
+save from data recovery
+lsblk
+badblocks -ws /dev/sda 
+
+
+dd if=/dev/zero off=/dev/sda
+
+
+lsblk
+attach harddisk with your running system
+lsblk 
+now lest scan 
+ls /sys/class/scsi_host/ | while read host; do echo "- - -" > /sys/class/scsi_host/$host/scan; done 
+lsblk
+
+for x in 'ls /sys/class/scsi_host/' | do echo "- - - - - $x Scaned- - - - -"; echo "- - -"> /sysclass/scsi_host/$x/scan; done 
+fdisk -l /dev/sda
+used only for MBR only 4 primary partation craeted
+
+GPT disk 128
+gpdisk usd for created GPR password 
+
+cat /proc/partitions
+
+Create PArtatiaon 
+fdisk /dev/sda
+n
+p
+1
+Enter
++2G
+t
+8e
+w
+partbrobe
+lsblk 
+
+fdisk /dev/sda
+n
+p
+1
+Enter
++3G
+w
+partprobe
+lsblk
+
+fdisk -l /dev/sda
+cat /proc/partitions
+
+
+fdisk /dev/sda
+n
+e
+Enter
+1G
+w
+partprobe
+lsblk
+fdisk -l /dev/sda
+
+
+
+For inster data in partation
+mkdir Data
+mount /dev/sda1 /Data
+mkfs.xfs /dev/sda1
+lsblk -f
+mount /dev/sda1 /Data
+df
+cd /Data
+touch test{a..z}
+umount /dev/sda1 /Data
+ls -ld  /dev/sda
+
+mkdir test
+mount /dev/sda1 /test
+
+cd test 
+ls
+
+
+-------------------------------------------------------------------------------------------------
+      Filesystems & Mounting in Linux | Manage Filesystems in RHEL 8
+-------------------------------------------------------------------------------------------------
+man fs
+cat /proc/filesystems
+cat /etc/filesystems
+man mount
+
+
+lsblk
+mke2fs /dev/sdb
+blkid /dev/sdb
+lsblk -f
+tune2fs -l /dev/sdb |grep -i "block count"
+incress brlock size
+tune2fs -m10 /dev/sdb
+tune2fs -l /dev/sdb |grep -i "block count"
+cat /etc/fstab
+df
+mount 
+cat /etc/mtab
+lsblk -f
+copy uuid
+vi /etc/fstab
+UUID=PAST /test  ext2 default 0 2
+
+df
+mount -a
+df
+man fstab
+fsck /boot
+umount /test
+mount -t ext2 /dev/sdb /test/
+df -Th
+readonly mount 
+mount -t ext2 -o ro /dev/sdb /test
+mount |grep sdb
+cat /etc/mtab | grep sdb
+mount /dev/sdb
+mount -t ext2 -o noexec /dev/sdb /test
+mount |grep sdb
+cat /etc/mtab | grep sdb
+cp -r /sbin/ifconfig /test
+cd test
+ll
+./ifconfig
+umount /test
+mount -t ext2 -o noacl /dev/sdb /test/
+cat /etc/mtab | grep sdb
+cd test 
+touch a
+setfacl -m u:zybi 7 a
+
+
+--------------------------------------------------------------------------------------------
+    Convert EXT2 Into EXT3 & EXT4 | Enable/Disable Journaling Feature
+---------------------------------------------------------------------------------------------
+lsblk
+attach disk with VM
+for x in 'ls /sys/class/scsi_host/' | do echo "- - - - - $x Scaned- - - - -"; echo "- - -"> /sysclass/scsi_host/$x/scan; done 
+lsblk
+fdisk /dev/sda
+n
+p
+Enter
+enter
+w
+partprobe
+lsblk 
+lsblk -f
+mke2fs /dev/sda1
+blkid
+lablk -f
+tune2fs -l /dev/sda1 | grep feature
+mkdir test 
+mount /dev/sda1 /test
+df -hT
+cd test
+touch test{1..20}
+cal > cal.txt
+cd
+
+Convert EXT2 to EXT3
+umount /test
+df -Th
+tune2fs -j /dev/sda1
+blkid /dev/sda1
+tune2fs -l /dev/sda1 | grep feature
+mount /dev/sda1 /test
+cd test
+cat cal
+
+
+Convert EXT3 to EXT4
+umount /test
+df -Th
+tune2fs -O extents,uninits_bg,dir_index /dev/sda1
+blkid /dev/sda1
+lsblk -f
+mount /dev/sda1 /test
+ll
+cat cal.txt
+
+Journaling Feature enable or disable 
+
+tune2fs -l /dev/sda1 | grep feature
+umount /test
+tune2fs -O ^has_journal  /dev/sda1
+tune2fs -l /dev/sda1 | grep feature
+Enable Journaling 
+tune2fs -O has_journal  /dev/sda1
+tune2fs -l /dev/sda1 | grep feature
+
+
+Mounting 
+vi etc/fstab
