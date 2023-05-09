@@ -1,0 +1,291 @@
+
+-----------------------------------------
+      Logical Volume (LVM) Feature 
+------------------------------------------
+lsblk 
+sda
+sdb
+
+fdisk /dev/sda
+n
+p
+1
+2G
+t
+8e
+n
+p
+2
+3G
+t
+8e
+w
+partprobe
+lsblk 
+
+
+ab hum in paration  k madadse physiacal volumes  create krn gy 
+pvs
+pvdisplay 
+lsblk
+
+Pehly hun sda1 per physical volum create krn gy 
+pvcreate /dev/sda1
+pvs
+pvdisplay
+
+ab main volume group create krn 
+vgcreate LinuxVG /dev/sda1
+vgs
+vgsdisplay
+
+AB hum LVM create krn gy 
+lvcreate -L 3GB -n LinuxLV LinuxVG
+lvcreate -L 2000M -n LinuxLV LinuxVG
+
+lvs
+lvdisplay
+lsblk
+lsblk -f
+mkdir /testdir
+mount /dev/LinuxVG/LinuxLV /testdir
+
+mkfs.ext4 /dev/mapper/LinuxVG-LinuxLV
+
+mkfs.ext4 /dev//LinuxVG/LinuxLV
+
+mount /dev/LinuxVG/LinuxLV /testdir
+df -Th
+cd testdir
+touch test{1..10}
+cal > cal.txt
+
+
+
+agr hume apne Volum group ko barhana hai 
+vgs 
+lsblk 
+vgextend  LinuxVG /dev/sda2 
+vgs
+
+agr hume pane LVM ko extend krn hai 
+lvextend -L +2G /dev/LinuxVg/LinuxLV
+lvs
+resize2fs /dev/LinuxVg/LinuxLV
+
+
+REmove LVM 
+umount /dev/mapper/LinuxVG-LinuxLV
+sb se pehly hum logical volume ko remove krn gy 
+lvremove /dev/mapper/LinuxVG-LinuxLV
+
+ab hum Volume group ko remove krn gy 
+vgremove LinuxVG
+vgs
+pvremove /dev/sda1
+pvremove /dev/sda2
+
+
+lsblk
+
+
+agr hume partaion ko b remove krn hai
+fdisk /dev/sda
+d
+1
+w
+partprobe
+
+
+----------------------------------------------
+      Extend/Reduce LVM 
+----------------------------------------------
+add 2 Disk in VM 
+lsblk
+fdisk -l /dev/sda
+dfisk /dev/sda
+n
+p
+1
+3G
+t
+8e
+w
+partprobe
+lsblk
+
+
+dfisk /dev/sdb
+n
+p
+1
+2G
+t
+8e
+w
+partprobe
+lsblk
+
+ab hum indono partaion ki madad se physical volume group ban gy 
+
+pvcreate /dev/sda1
+lsblk
+pvcreate /dev/sdb1
+pvs
+
+Ab hum indono ko use kr volume group banaen gy 
+vgcreate nehraClass_VG /dev/sda1 /dev/sdb1
+
+vgs
+
+ab LVM creat krn gy 
+lvcreate -L 4G -n nehraClass_LV nehraClass_VG
+lvs
+
+lsblk -f
+mkfs.ext4 /dev/mapper/nehraClass_LV-nehraClass_VG 
+
+mkfs.ext4 /dev/nehraClass_LV/nehraClass_VG 
+blkid
+mkdir testdir
+mount /dev/nehraClass_LV/nehraClass_VG /testdir
+touct test{1..20}
+cal > cal.txt
+cd
+
+ab hume LVM ko extend krn gy with data
+
+df -hT
+lvextend -L +1000M /dev/nehraClass_LV/nehraClass_VG 
+lvs
+df -hT
+rezise2fs /dev/nehraClass_LV/nehraClass_VG 
+df -hT
+
+Extent uour LVM
+
+lsblk 
+fdisk /dev/sda
+n
+p
+2
+Enter 3G
+t
+8e
+w
+partprobe
+lsblk
+
+ab hiim isko Physical volumem convert krn gy 
+pvcreate /dev/sda2
+pvs
+vgextend nehraClass_VG /dev/sda2
+
+vgs
+
+lvextend -L 5G /dev/nehraClass_LV/nehraClass_VG -r
+lvs
+df -hT
+cd /test
+
+
+----------------------------------------------------------
+      Logical Volume (LVM) Snapshot Feature
+----------------------------------------------------------
+lvs
+lsblk
+add disk 10GB
+
+create 2 patation 
+partprobe
+lsblk 
+sda
+ sda1
+ sda2
+
+vgcreate system /dev/sda1
+pvs
+vgs
+lvcreate -L 3G -n data system 
+lvs
+mkfs.ext4 /dev/system/data
+
+lsblk -f
+mdir data
+cd /data
+ll
+cd
+mount /dev/syatem/data /data
+cd data
+touch test{1..5}
+cal > cal.txt
+mkdir aa bb cc
+cd
+du -sh  /data
+
+ab hum LVM ka snapshort len gy or uski madad se datase ko restore krn gy
+lvcreate -L 1G -s -n snapo_data /dev/system/data
+lvs
+cd /data
+rm -rf *
+ll
+
+cd
+ unmount /data
+ sd -hT
+
+ab hum backup se data ko restore krn gy 
+lvconvert --merge /dev/system/snap_data
+lvs
+
+ab apne LVM ko deactivate kr k activate krn gy 
+lvchange -an /dev/system/data
+lvs
+lvchange -ay /dev/system/data
+lvs
+mount /dev/system/data /data
+df -hT
+clear
+cd data
+ll
+
+
+-------------------------------------------
+      Restore Removed LVM in Linux 
+-------------------------------------------
+add 5GB disk 
+lsblk
+create partataion
+sda
+ sda1
+pvcreate /dev/sda1
+vgcreate Linux_VG/dev/sda1
+vgs
+lvcreate -L 3G Linux_LV Linux_VG
+lvs
+mkfs.etx4 /dev/Linux_LV/Linux_VG
+lsblk -f
+mount /dev/Linux_LV/Linux_VG /data
+cd data
+touch text{1..5}
+umount /data
+lsblk 
+lvremove /dev/Linux_LV/Linux_VG
+lvs
+
+restore LVM 
+cd /etc/lvm/archive
+ls -ltrh 
+vgcfgrestore Linux_VG --test -f /etc/lvm/archive/faileNAme
+lvs
+vgcfgrestore Linux_VG  /etc/lvm/archive/faileNAme
+lvs
+lvscan
+vgscan 
+lvchange -ay /dev/Linux_LV/Linux_VG 
+lvscan 
+mount /dev/Linux_LV/Linux_VG /data
+cd data
+ll
+
+
