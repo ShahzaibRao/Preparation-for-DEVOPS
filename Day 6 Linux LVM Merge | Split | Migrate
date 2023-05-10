@@ -1,0 +1,274 @@
+
+--------------------------------------------
+			Merge/Split Volume Groups 
+--------------------------------------------
+lsblk
+sba
+
+create 2 volume groups 
+fdisk -l /dev/sda
+fdisk /dev/sda
+n
+p
+Enter
+5G 
+t
+8e
+n
+p
+Enter
+Ebter
+t
+8e
+w
+partprobe
+
+lsblk 
+sda1
+sda2
+
+hum inko pgysical volume m covert krn gy 
+
+pvcreate /dev/sda1 /dev/sda2
+pvs
+
+ab hum volume groups create krn inki mdad se 
+vgcreate Vg1 /dev/sda1
+vgcreate Vg2 /dev/sda2
+vgs
+ ab in per logical volume create krn gy 
+
+lvcreate -l  1000 -n lv1 vg1
+lvs
+lvcreate -l  1000 -n lv2 vg2
+lvs
+
+ab hum ondono ko formate krn gy 
+mkfs.ext4 /dev/vg1/lv1
+mkfs.ext4 /dev/vg2/lv2
+
+lsblk -f
+mkdir test1
+mkdir test2
+mount /dev/vg1/lv1 /test1
+mount /dev/vg2/lv2 /test2
+
+df -hT
+cd /test1
+touch {1..10}
+cal > cal
+
+cd /test2
+touch {a..z}
+date > date
+
+cd
+ab hum in LVM groups ko merge kn gy 
+umount /test1
+umount /test2
+df -hT
+
+ab hume jis group ko DOsry group k sth merge krna hai uko deactivate krn gy 
+
+lvscan
+vgchange -an vg2
+
+lvscan
+vgs
+lvs
+
+vgmerge vg1 vg2
+vgs
+lvs
+lvscan
+lvchange -ay /dev/vg1/lv2
+lvscan
+mount /dev/vg1/lv1 /test1
+mount /dev/vg1/lv2 /test2
+df -hT
+cd /test1
+ll
+cd /test2
+ll
+
+
+Ab hum dekhty hain kesy hum kesi Volume group ko Slipt krn gy c
+cd
+umount /test1
+umount /test2
+df -hT
+pvs
+ ab hum Vg2 ko wapis split krty hain 
+vgchange -an vg1
+lvscan 
+vgs
+lvs
+vgsplit vg1 vg2 /dev/sda2
+vgs
+lvscan 
+vgchange -ay vg1 vg2
+lvscan 
+mount /dev/vg1/lv1 /test1
+mount /dev/vg2/lv2 /test1
+df -hT
+cd /test1
+ll
+cd /test2
+ll
+
+-------------------------------------------------------------------------------
+			Migrate Physical Volumes (PVs) & LVM From One Disk To Another
+-------------------------------------------------------------------------------
+
+lsblk
+sda
+sdb
+
+ab dekhen gy kesy hum ek LVM ko data k sth ekj disk se dosri disk per migrate krn gy 
+fdisk -l /dev/sda
+fdisk -l /dev/sdb
+
+cretae 1 paration
+sda1
+lsblk
+pvcreate /dev/sda1
+pvs
+vgcrate dataVG /dev/sda1
+vgs
+lvcreate -l 1000M -n dataLV dataVG 
+lsblk 
+mkfs.ext4 /dev/dataVG/dataLV
+mkdir data
+mount dev/dataVG/dataLV /data
+df -hT
+cd data
+touch test{a..z}
+cd
+lsblk
+
+
+Lest Migrate our data
+sdb
+create partation in sdb
+sdb1
+partprobe 
+lsblk 
+sdb1
+
+ jab m migreate krty ian apne volume group ko extend krna hga 
+pvcreate /dev/sdb1
+pvs
+vgextend dataVG /dev/sdb1
+vgs
+ls -l /dev/ | grep sd
+dmsetup deps /dev/dataVG/dataLV
+
+pvmove -n dataLV /dev/sda1 /dev/sdb1
+
+lsblk 
+pvs
+
+Hume data ko migrate kr liye ab hum previous disk ko LVM group ko remove kr sktty hain 
+vgreduce dataVG /dev/sda1
+cd data 
+ls 
+
+AB hum DEkhty hain klesy hum apne ROOT or swap waly data ko b kesi dosry disk per shift kr skty hain 
+lsblk 
+
+Hum yahan se root or wsap ko move krn gy 
+
+sda
+create partaios
+lsblk 
+sda1
+pvcreate /dev/sda1
+pvs
+vgs
+lvs
+vgextend GroupNAme /dev/sda1
+
+vgs
+pvmove -n root /dev/sdb1 /dev/sda1
+lsblk 
+
+
+pvmove -n swap /dev/sdb1 /dev/sda1
+lsblk 
+pvs
+vgreduce GroupName /dev/sda1
+vgs
+
+
+
+
+-------------------------------------------------------------------------
+			 Migrate LVM Data Disk From One Machine To Another 
+-------------------------------------------------------------------------
+lsblk 
+sda
+create paration 
+sda1
+partprobe
+lsblk 
+fdisk -l
+pvcreate /dev/sda1
+pvs
+vgcreate volGrp /dev/sda1
+vgs
+vgdispaly
+lvcreate -l 2000 -n LogVol VolGrp
+lvs
+lvs
+mkfs/ext4 /dev/VolGrp/LogVol
+blkid /dev/VolGrp/LogVol
+mkdir data
+
+mount /dev/VolGrp/LogVol /data
+df -hT
+cd data
+touch {1..11}
+lvs
+
+ab hum procedure start krty hiahbn LVM, ko Move krny ka 
+lvs
+vgs
+cd 
+umount /data
+lsblk 
+df -hT
+vgchange -an VolGrp 
+lvs
+
+vgexport VolGrp
+lvscan 
+vgs
+lvs
+init 0
+
+start second machine 
+attach Disk 
+
+
+change booting priorities
+
+f12
+change disk prioporty 
+f10 
+restart
+login 
+lsblk 
+pvs
+lvscan 
+vgs
+pvscan 
+vgs
+vgimport VolGrp 
+vgs
+lvscan 
+lvs
+vgchange -ay VolGrp 
+vgs
+mkdri data
+mount /dev/VolGrp/LogVol /data
+cd data
