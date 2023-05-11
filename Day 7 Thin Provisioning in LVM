@@ -1,0 +1,174 @@
+
+---------------------------------------------------------------------
+			Setup Thin Provisioning Volumes in Logical Volume 
+----------------------------------------------------------------------
+lsblk
+add two disk 
+sda
+sdb
+
+creat partation sdb
+fdisk /dev/sdb
+n
+p
+1
+Enter
+20G
+w
+partprobe
+lsblk 
+pvcreat /dev/sdb1
+vgs
+vgdsiply 
+
+custom extenbd size
+vgcreate -s 32M vg_thin /dev/sdb1
+vgs
+vgdisplay vg_thin 
+lvs
+
+lvcreate -L 15G --thinpool thin_pool vg_thin
+lvs
+lsblk 
+
+lvdsipaly vg_thin/thin_pool 
+ab hun is pool k andr lgical volume banen gy 
+
+lvcreate -V 5G --thin -n thin_vol_client1 vg-thin/thin_pool 
+
+lvs
+lvcreate -V 5G --thin -n thin_vol_client2 vg-thin/thin_pool 
+lvcreate -V 5G --thin -n thin_vol_client3 vg-thin/thin_pool 
+
+lvs
+
+mkdir -p /mnt/client1/ /mnt/client2/ /mnt/client3/
+ll /mnt
+mkfs.ext4 /dev/vg_thin/thin_vol_client1
+mkfs.ext4 /dev/vg_thin/thin_vol_client2
+mkfs.ext4 /dev/vg_thin/thin_vol_client3
+
+lsblk 
+
+mount /dev/vg_thin/thin_vol_client1 /mnt/client1
+mount /dev/vg_thin/thin_vol_client2 /mnt/client2
+mount /dev/vg_thin/thin_vol_client3 /mnt/client3
+
+df -h
+cd /mnt/client1
+fallocate -l 1G test.img
+
+ll
+lvs
+cd /mnt/client2
+fallocate -l 1G test.img
+ll
+
+cd /mnt/client2
+fallocate -l 1G test.img
+ll
+
+cd
+vgs
+lvs
+
+creat one more LVM 
+
+lvcreate -V 5G --thin -n thin_vol_client4 vg-thin/thin_pool 
+lvs
+
+
+Extentd 
+lvextend -L +15G /dev/vg_thin/thin_pool 
+lsblk 
+create new  partation
+fdisk /dev/sdb
+n
+p
+2
+Eneter
+t
+8e
+w
+partprobe
+pvcreate /dev/sdb2
+pvs
+
+ab hume volume group ko extend krn gy 
+vgextend vg_thin /dev/sdb2
+vgs
+lvextend -L +15G /dev/vg_thin/thin_pool 
+vgs
+lvs
+
+
+
+
+
+
+------------------------------------------
+        Create & Manage Swap Space
+------------------------------------------
+cat /etc/os-release
+login two machine 
+RedHAt
+lsblk
+centos
+lsblk
+
+create swap spacen in machine
+fdisk /dev/sda
+n
+p
+Enter
+Enter
+Enter
+t
+find swap code
+82
+w
+lsblk
+partprobe
+mkswap /dev/sda1
+lsblk -f
+free -m
+cat /proc/sawap
+lsblk
+swapon -a
+swapon /dev/sda1
+lsblk
+free -m
+top
+cat /proc/sawap
+
+vim /etc/fstab
+UUID= PAST swap defaults 0 0
+free -g
+free -m
+
+
+GO to centos
+fdisk /dev/sda
+create partataion
+LVM
+pvcreate /dev/sda1
+pvs 
+vgcreate swap_vg /dev/sda1
+vgs
+lvcreate -L 5000M -n swap_lv swap_vg
+lvs
+mkswap /dev/sda1/swap_vg/swap_lv
+swapon /dev/sda1/swap_vg/swap_lv
+lsblk
+free -m
+cat /proc/sawap
+.
+
+
+swapoff /dev/sda1/swap_vg/swap_lv
+lsblk
+free -m
+cat /proc/sawap
+swapon -a
+
+
