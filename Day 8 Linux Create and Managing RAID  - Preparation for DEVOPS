@@ -1,0 +1,249 @@
+
+----------------------------------------------------------------
+			Concept of RAID & RAID Levels | Create & Manage RAID-0
+----------------------------------------------------------------
+RAID ek bht important concentp hai stoage managment m 
+
+
+
+RAID 0 ko hum striping k naam se b janty hain hain , yahan per data ko multiple disk per distibute kiya jata hai, RAID 0 ka main perpose 
+Performance ko incress krna hai RADI 0 hume allow krta hai, multiple disks per ek stah read and or write operations perform krne k liye.
+
+RAID 0 ki configuration main, data ko choty choty Blocks m divide krty hain jesy stripes kehty hain or esy write krty hain tamam disk k arry per,
+RAID 0 hume provide krty hain faster read and write speed then a single disk, lakin agr ek disk fail hwi tu sara data lost ho jaye ga.
+RAO 0 sutable hai wahan per jahan hamara main concern  PERFORMANCE hota hain, like tata video editingm gaming , AI realated task.
+
+
+
+
+lsblk
+5 Disk 
+create 2 partadin
+sda1
+sdb1
+raid code fd
+w
+partprobe
+lsblk 
+
+cat /proc/mdstat
+mdadm -C /dev/md0 -l 0 -n 2 /dev/sda1 /dev/sdb1
+lsblk
+cat /proc/mdstat
+mdadm -D /dev/md0
+lsblk
+mkfs/ext4 /dev/md0
+mkdir raid0
+mount /dev/md0 /raid0
+df -hT
+cd raid0
+touch {1..20}
+cal >cal.txt
+lsblk
+
+
+remove raid
+umount  /raid0
+mdadm -S /dev/md0
+cat /proc/mdstat
+lsblk
+remove partation
+
+
+mdadm -C /dev/md1 -l 0 -n 2 /dev/sda1 /dev/sdb1 /dev/sdc1
+change this raid into LVM 
+lsblk
+pvcreate /dev/md1
+pvs
+vgcreate raid1_vg /dev/md1
+vgs
+lvcreate -L 2g -n raid1_lv raid_vg
+lvs
+mkfs.ext4 /dev/mapper/vgnmae/lvname
+mount /dev/md1 /test
+df -hT
+
+mdadm -m
+
+
+
+
+
+
+---------------------------------------------------
+								 Create & Manage RAID-1 
+---------------------------------------------------
+lsblk
+create 2 partation
+t
+fd
+w
+partprobe
+lsblk
+sda1
+sdb1
+
+cat /proc/mdstat
+
+mdadm -C /dev/md0 -l 1 -n 2 /dev/sda1 /dev/sdb1 
+cat /proc/mdstat
+mdadm --datail /dev/md0
+lsblk -f
+mkfs.ext4 /dev/md0
+lsblk -f
+mkdri raid1
+mount /dev/md0 /raid1
+df -hT
+cd raid1
+cal >cal
+date >date
+
+ab hum disk ko faulti krty hain 
+cat /proc/mdstat
+
+mdadm  /dev/md0 -f /dev/sda1 
+cat /proc/mdstat
+mdadm --datail /dev/md0
+
+
+ab hum disk ko replace krn gy 
+lsblk
+sdc1
+lsblk
+unmount /raid1
+check which disk i faulti 
+cat /proc/mdstat
+mdadm /dev/md0 -r /dev/sda1
+mdadm /dev/md0 -a /dev/sdc1
+mdadm --datail /dev/md0
+
+
+
+
+
+
+--------------------------------------------------
+									Create & Manage RAID-5 
+--------------------------------------------------
+RAID 5 main hun striping with parity ka concept use krty hain, RAID 5 hume data redundency and fault tolanrance provide krta hain, RAID 5 m hum data ko multiple disk per distribute krty with parity of data,
+incase agr hamari agr koi ek disk fail b ho jaye tu hum, Parity ki madad se data se ko recover kr len gy, lakin agr hamari 2 disk ek sth fail ho gai tu harama data lost ho jaye ga,
+RAID 5 ko configure krne k liye hume minimum 3 disk ki zarorat hoti hai,
+RAID 5 hume provide krta hai good balance b/w performance nad data redundancy,it is suitable for application that require both high performance and fault tolernace such as dababases, file servers and virtualizaation hosts,
+
+
+lsblk 
+4 disck 
+mdadm --create /dev/md0 -l 5 -n 3 /dev/sda dev/sdb /dev/sdc
+mdadm --datial /dev/md0
+cat /proc/mdstat
+
+mkfs.ext4 /dev/md0
+mkdir raid5
+mount /dev/md0 /raid5
+df -hT
+cd raid5
+cal 
+date
+
+cd
+ab hum disk ko faulti krn or phir us dis replcae krn or phr check krn gy ye data ko kesy rebuild kry gi 
+mdadm --datail /dev/md0
+mdadm  /dev/md0 -f /dev/sda
+mdadm --datail /dev/md0
+cd raid5
+ll
+
+
+umount /raid5
+mdadm /dev/md0 -r /dev/sda
+
+
+lsblk
+mdadm /dev/md0 -a /dev/sdd
+cat /proc/mdstat
+mdadm -D /dev/md0
+
+
+
+
+---------------------------------------------------
+									Create & Manage RAID-6 
+---------------------------------------------------
+lsblk 
+minimum 4 disk neded
+mdadm --create /dev/md0 -l 6 -n 4 /dev/sda dev/sdb /dev/sdc /dev/sdd
+mdadm --datial /dev/md0
+cat /proc/mdstat
+mkfs.ext4 /dev/md0
+mkdir raid6
+mount /dev/md0 /raid6
+df -hT
+cd raid6
+cal 
+date
+
+mdadm --datail /dev/md0
+mdadm  /dev/md0 -f /dev/sda 
+mdadm --datail /dev/md0
+cd raid5
+ll
+mdadm  /dev/md0 -f /dev/sdb
+mdadm --datail /dev/md0
+cd raid5
+ll
+
+
+umount /raid5
+mdadm /dev/md0 -r /dev/sda /dev/sdb
+lsblk
+mdadm /dev/md0 -a /dev/sdf /dev/sdg
+cat /proc/mdstat
+mdadm -D /dev/md0
+
+
+
+------------------------------------------------------
+									Create & Manage RAID-10 
+-----------------------------------------------------
+Yahan per hum mirroring or string ka concept sath m use krty hain,RAID 1 0 main lower end per mirroring hoti ahi or uper end per straping hoti hai,is k liye hume minimum 4 Disk ki zarort hoti hai, 
+agr raid 1 0 m kuch wrong error aata hai ya disk fail hti haim or rebuild time kafi fast hta hai,
+mirrioring ki waja se disk capicity half ho jati hai,
+
+
+lsblk 
+sda sdb sdc 
+sda sdb sdc
+create 4 partation
+sda1 sdb1 sdc1 sdd1
+lsblk
+mdadm -C /dev/md0 -l 10 -n 4 /dev/sda1 dev/sdb1 /dev/sdc1 /dev/sdd1
+mdadm --datial /dev/md0
+cat /proc/mdstat
+mkfs.ext4 /dev/md0
+mkdir raid10
+mount /dev/md0 /raid10
+df -hT
+cd raid10
+cal 
+date
+
+mdadm --datail /dev/md0
+mdadm  /dev/md0 -f /dev/sda1
+mdadm --datail /dev/md0
+cd raid10
+ll
+mdadm  /dev/md0 -f /dev/sdca
+mdadm --datail /dev/md0
+cd raid10
+ll
+
+
+umount /raid5
+mdadm /dev/md0 -r /dev/sda1 /dev/sdc1
+lsblk
+mdadm /dev/md0 -a /dev/sdf1 /dev/sdg1
+cat /proc/mdstat
+mdadm -D /dev/md0
+
+
+
