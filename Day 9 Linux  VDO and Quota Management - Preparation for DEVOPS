@@ -1,0 +1,229 @@
+
+------------------------------------------------------------
+        Create & Manage Virtual Data Optimizer 
+------------------------------------------------------------
+VDO ka matlab hota hai virtual data Optimzer, Ye ek block virtualization techonology hti hai m ye hume block device level pr data ka de-duplication or comprission ki faclity provide krti hai, 
+Man li jiye ap ne ek file ko 10 folder m copy kiya hwa hai or wo folder ek e derive per modoj hai ,jab k ap esa b kr skty the, ek ek e file hti or baki jaga per ap uska shortcut banalty ,,  Or ye kaam ap kiye VDO krta hai .Ye dekhta hai agr apka ek e data different jaga per para hai tu, data ki single file rkhta hai or baki jaga uska refrence create kr deta hai. or sth k sth ye data ko block level per data ko compress b kr deta ahi.
+
+
+lsblk
+attach 2 partation 
+sda 10GB
+sdb 10Gb
+dnf repolist all 
+yum install kmod-kvdo
+yum update all
+yum install kmod-kvdo vdo -y
+systemctl start vdo
+systemctl service vdo
+systemctl enable vdo
+lsblk
+
+use raw disk 
+vdo create --name=vdo1 --device=/dev/sda --vdoLogicalSize-=300G
+init 0 if you get error
+lsblk 
+vdostats --hu
+vdostats --verbose /dev/mapper/vdo |head -15
+pvcreate /dev/mapper/vdo1
+pvs
+vgcreate vdo1vg /dev/mapper/vdo1
+vgs
+lvcreate -n vdo1v01 -L 50G vdo1vg vdo1lv 
+lvs
+lvcreate -n vdo1v02 -L 50G vdo1vg vdo1lv
+lvs
+
+mkfs.ext4 -K /dev/vdo1vg/vdo1lv
+
+man fstrip
+
+mkdor v01
+mkdir v02
+
+mount -o discord /dev/maaper/vgname/lvname /v01
+mount -o discord /dev/maaper/vgname/lvname /v02
+
+df -hT
+vdostats --hu
+
+cd v01
+cal >cal
+cp /usr/sbin/* .
+cd v02
+cp /usr/sbin/* .
+cd
+vdostats --hu
+
+
+
+
+----------------------------------------------------------------------------------
+				Disk Quota Management for Users & Groups on EXT4 Filesystem 
+----------------------------------------------------------------------------------
+lsblk
+3 disk 
+fdisk /sda
+create partation 
+sda1
+mkfs.ext4 /dev/sda1
+
+rpm -qa qouta
+yum list installed quota
+useradd zybi 
+useradd hamza
+useradd mazz
+groupadd quotagrp
+usermod -g quotagrp hamza
+usermod -g quotagrp mazz
+mkdir /quotadir
+mount /dev/sda1 /quotadir
+df -hT
+mount | grep quotdir
+
+vim /etc/fstab
+/dev/sda1 /quotadir ect4 defaults,usrquota,grpquota 0 0
+mount -o remount /quotadir
+mount | grep quotdir
+
+create quotafile 
+
+quotacheck -cug /quotadir/
+cd quotadir
+ll
+ab hum quota ko on krn gy 
+quotacheck -avg 
+soft limi, hard limit.grace period
+
+edquota zybi
+/dev/sda1 block 0 soft 100000 hard 200000  inodes 0 soft 10 hard 15
+edauota -g quotagrp
+/dev/sda1 block 0 soft 400000 hard 500000  inodes 0 soft 200 hard 300
+quotaon /quotadir/
+ll quotadir
+chmod 777 quotadir
+chgrp quotagrp /quotadir/
+su zybi
+cd quotadir
+touch zybi.user{1..10}
+touch zybi.user{10..15}
+touch zybi.user{15..17}
+remove zybi.userfiles
+rm zybi.user*
+
+dd if=/dev/zero of=/quotadir/zybiuser.tzt vb 1M count=100
+
+ls -lh
+rm zybiuser.txt
+dd if=/dev/zero of=/quotadir/zybiuser.tzt vb 1M count=200
+ls -lh
+
+su hamza
+touch hamza.user{1..100}
+touch zybi.user{100..500}
+
+quota zybi
+quota -g quotagrp
+
+
+edquota -T zybi 
+24hours 
+135minuts
+2minuts
+
+su zybi
+touch zybi.user{1..30}
+
+
+reppquota -a
+
+
+--------------------------------------------------
+        Disk Encryption Using LUKS in Linux 
+--------------------------------------------------
+
+
+
+dnf repolist all
+dnf list install | grep cryptsetup
+yum install crypsetup -y
+lsblk
+sdb
+cryptsetup luksFormate /dev/sdb
+YES
+Key
+key
+Enter
+
+cyptsetup luksOpen /dev/sdb/ myfiles
+Enter key
+lsblk
+cryptsetup status myfiles
+ls -lhtr /dev/mapper/myfiles
+mkdir myfiles
+mkfs.ext4 /dev/mapper/myfiles
+lsblk -f
+mount /dev/mapper/myfiles /myfiles
+df -hT
+
+umount /myfiles
+
+Crate a file with randon data
+dd if=/dev/urandom of=/tmp/crypt_file bs=4096 count=1
+
+ab hum is file ko as a ketfile use krn gy or pani disk ko mount krn gy 
+chmod 600 /tm/crypt_file
+mv /tmp/crypt_file /etc/
+ls -l /etc/crypt_file
+
+ab ye define krn gy  k ahum is kery ko kis file k liye use kr rhy hain 
+cryptsetup liksAddKey /dev/sdb /etc/crypt_file
+vim /etc/crypttab
+myfile /dev/sdb etc/crypt_file
+save
+vim /etc/fstab
+/dev/mapper/myfiles /myfile ext4 deafults 0 0 
+save
+
+mount -a
+df -hT
+chmod 777 myfiles
+cal  > cal 
+date > date
+su zybi 
+cat cal 
+cat date
+su -
+umount /myfiles
+umount -l /myfiles
+df -hT
+cryptsetup lukClose myfiles
+lsblk
+cryptsetup luksOpen /dev/sdb/ myfiles
+cryptsetup status myfiles
+cryptsetup lukClose myfiles
+cryptsetup status myfiles
+
+cryptsetup luksOpen /dev/sdb/ myfiles
+mount -a 
+su zybi
+cd myfiles
+ls
+su -
+chenge Key 
+cryptsetup luksChangeKey /dev/sdb 
+old key
+new key 
+new key 
+
+REmove Encryption
+umount /myfiles
+df -hT
+vim /etc/fstab
+remove line 
+cryptsetup luksRemoveKey /dev/sdb
+cryptsetup remove /dev/sdb
+lsblk
+cryptsetup luksClose myfile
+
+
