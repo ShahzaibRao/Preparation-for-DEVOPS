@@ -1,0 +1,309 @@
+-----------------------------------------------
+			Resolve Kernel Panic Error 
+-----------------------------------------------
+initramfs error 
+grup crupt 
+c
+cd /boot
+ls
+
+config k andr boot ki required files hoti hain 
+grup2 k andr apka jo grup hai uski main configuration files or baki other suportaive file dekhne ko milti hain 
+inintramfs k and driver or kernel module shoty hain , jo ram m load hoty hain system k booting k time per taky hamara hardware initialize hosky
+
+Bech wali file main file , jab hum machine ko boot krty hain iski madad se drivers or module kernel per laod ho jaty hain 
+agr ye file delet ho jaye tu hume kernel panic ki error dekhne ko mily gi , kernel thk se sary module ko load e ni krne paye ga or hardware initilize hoga e nhii ,
+
+Initramfs rescue k name se ek or file dekhne ko mil rhi hai , iska kam hai driver or module ko laod krna memory m rescure kernel k hisab se m Jab b hum machine ko boot krty han hume grub menu dekhne ko milta haim jittne b kernel hain wo hume wahan screen per show hoty hain
+
+Last img hot hain Kernel dump k liye 
+
+
+Yahan VMlinz k naam se 2 img or dekhne ko mil rhi hain , ye hamary kernel ki images hain 
+Jab hum normaly machine ko boot krty hain tu nechy wali kernel img use hoti hai,
+Jab hum Rescue kernel se machine ko boot krty hain tu 2nd last image use hti hain
+
+Loadder
+cd loader
+cd entries
+yahan per apko rescues configuration files dekhne ko milti hain 
+cd 
+cd /grup2
+cd i38pc
+ls
+yahan epr apko mopdule dekhne ko mity hain alag alg architecher k hisab se
+cd ..
+yahn per main fiile hoti hai grup.cfg
+cat grup.cfg
+cd /boot/
+
+chalo hume kernel ki file 2nd wlai ko remove krty hain 
+is ki waja se hume kernel paic error dekhen ko mily gi 
+rm rvf initramfs,,,x86.x64.img
+ls
+init 6
+
+Go vBox 
+Press any Key 
+unable ko mount root file system 
+reboot 
+select second one rescure kernel 
+
+login with ssh
+cd /boot/
+ls
+ab hum ye dekhty hain k kesy hum yahan  file regenrate kr skty hain 
+sub se pehly hume kernel version paatakrna hga
+Copy it
+uname -r
+copy 
+dracut with -fr for cruot file
+but hamry case m humne file ko delte kiya hai
+dracut -v PAST.img PAST
+ls
+
+agg file modod hai per wo curept hogai tu us case m apko file overwrite krna hga 
+
+dracut -v initramfs-PAST.img PAST --force
+ls
+
+Yehi same kam ek or dosri commad se b kr skty hain
+rm recent created files
+mkinitrd -v initramfs-PAST.img PAStagain 
+ls
+mkinitrd -v initramfs-PAST.img PAStagain --force 
+ls
+
+
+init 6
+
+
+Agr apki rescue ki kernel file delete ho jaye ya Grup menu dekhne ko na mily tu us case main apko machine ko ISO image se boot krna hga
+
+cd /boot/grub2
+ll
+rm grub.cfg
+cd ..
+rm -fv grub2
+ls
+
+init 6
+
+attech ISO image which image you use for installaion OS
+got to BIOS
+change bootin order
+CR-ROM firts
+save
+Select troubleshooting
+select Rescue a centos 
+
+
+select 1 continue
+Enetr
+Enter
+lsblk
+Ab hum ch rooting krn gy 
+
+chroot /mnt/sysimage/
+
+sb se pehly hum grub ki files ko resotore krn hai
+
+grub2-install /dev/DISKNAME
+ab hume grub ki config file ko generate krna hga 
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+abi hume exite nhi krn gy 
+hume SELInnux ki file re labeling krni hgi 
+
+touch /.autorelabel
+exit
+exit
+got to BIOS
+change bootin order
+HARDdisk firts
+
+login
+
+Remove grub.conf content 
+adn do it again 
+init 6
+
+
+
+=============================================================================
+
+How to Recover /boot directory in CentOS 8:
+Connect with grub-recovery-01.recipes.com using ssh as root user.
+
+To initiate this recovery scenario, we are removing /boot directory.
+
+[root@grub-recovery-01 ~]# rm -rf /boot/*
+Reboot your system.
+
+[root@grub-recovery-01 ~]# systemctl reboot
+After reboot the GRUB will show the "grub rescue" prompt.
+
+.
+error: ../../grub-core/fs/fshelp.c:258:file '/grub2/i386-pc/normal.mod' not foun
+d.
+Entering rescue mode...
+grub rescue>
+Restart the system and boot using CentOS 8 ISO/DVD.
+
+01-recover-grub-2-bootloader-centos-8-install-menu
+
+At the CentOS 8 installation menu, select Troubleshooting and press <ENTER>.
+
+02-recover-grub-2-bootloader-centos-8-troubleshooting-menu
+
+Select Rescue a CentOS Linux system and press <ENTER>.
+
+03-recover-grub-2-bootloader-centos-8-rescue-prompt
+
+It will ask you for mounting your filesystem, choose the option and '1' and press <ENTER>.
+
+Press <ENTER> again to acquire a shell.
+
+The CentOS 8 DVD/ISO is mounted in mnt directory.
+
+Go to BaseOS packages directory.
+
+sh-4.4# cd /mnt/install/repo/BaseOS/Packages
+Reinstall kernel-core package using following command.
+
+sh-4.4# rpm -ivh --root=/mnt/sysimage --replacepkgs kernel-core-4.18.0-80.el8.x86_64.rpm
+Verifying...                          ################################# [100%]
+Preparing...                          ################################# [100%]
+Updating / installing...
+   1:kernel-core-4.18.0-80.el8        ################################# [100%]
+grub2-editenv: error: cannot open '/boot/grub2/grubenv.new': No such file or directory.
+Ignore above error, we will create this file manually.
+
+Run chroot to mount /mnt/sysimage as root directory.
+
+sh-4.4# chroot /mnt/sysimage
+Reinstall GRUB 2 using following command.
+
+bash-4.4# grub2-install /dev/sda
+Installing for i386-pc platform.
+Installation finished. No error reported.
+Recreate grub.cfg (GRUB menu) using grub2-mkconfig command.
+
+bash-4.4# grub2-mkconfig -o /boot/grub2/grub.cfg
+Generating grub configuration file ...
+done
+If you are using SELinux, then create following file to trigger SELinux file relabeling process on next startup.
+
+bash-4.4# touch /.autorelabel
+Finally exit from chrooted environment and reboot your system.
+
+bash-4.4# exit
+sh-4.4# reboot
+Boot using your Hard Disk and now it will display the GRUB boot menu this time.
+
+04-recover-grub-2-bootloader-centos-8-boot-menu
+
+We have successfully recovered /boot directory on CentOS 8.
+
+
+
+
+-------------------------------------
+			Install New Kernel 
+-------------------------------------
+4.18.0-448.el8.x86_64
+uname -r
+cd /boot
+ls
+cd /grub2
+ls
+cat grubenv
+
+cd..
+ls
+ab hum mew kernel install krn gy 
+uname -r
+hum is m kernerl verison 5 install krnm gy 
+
+is k liye hum elrepo ko add krna hga
+dnf repolisy all
+cd /etc/yum.repo.d/
+ls
+yum  install https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm -y
+ls
+dnf repolisy all
+yum --enablerepo="repoNAEM"
+yum --disablerepo="*" --enablerepo="elrepo-kernel" list available
+yum --enablerepo=elrepo-kernel install kernel-ml 
+cd /boot 
+ls
+
+ab agr hume chahen tu esy default kernerl b set kr skty hain 
+per hum kabi b greb ki config file ko directly edit nhi krty hain
+
+cat /boot/grub2/grubenv
+ya hum yahan se krn gy
+
+cat /etc/default/grub
+
+For latest
+grub2-set-default 0
+cat /boot/grub2/grubenv
+
+grub2-set-default 1
+cat /boot/grub2/grubenv
+
+cat /etc/default/grub
+
+grub2-set-default 0
+cat /boot/grub2/grubenv
+
+vim /etc/default/grub
+TimeOUT =30
+cat /etc/default/grub
+
+grub2-mkconfig -o /boot/grub2/grub.cfg
+init 6
+uname -r
+
+vim /boot/grub2/grubenv
+cat /boot/grub2/grubenv
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+init 6
+ 
+
+
+
+
+
+----------------------------------
+			Remove Old Kernels 
+----------------------------------
+uname -r
+dnf repolist all
+cd /boot/
+ls
+dnf update 
+init 6
+
+
+uname -r
+cd /boot
+ls
+du -sh /boot
+
+rmp -q kernel 
+uname -r
+rpm remove KERNELNAME
+rpm -e  KERNELNAME
+
+cd /boot
+ls
+
+uname -r 
+rm -rvf kernelNAMe remove
+
+remove initramfs 
+rm -f iniramfa....
+
