@@ -1,0 +1,232 @@
+
+----------------------------------------------------
+				Package Management in Linux 
+----------------------------------------------------
+
+.deb for debien 
+dpkg, apptitide , apt-get
+.rpm for Fedora
+rpm, yum ,dnf
+
+Debien pakgemanagment 
+dpkg -l 
+user for see installed packedge
+dpkg -l | wc -l
+dpkg -l rstnc
+dpkg -l apache2
+
+agr apko file ki information dehna hai k kesi pkg ki waja se konsi files files apk system b install hwi 
+dpkg -S rsync
+agr hune ye dekhna hai k is file ko is pkg wja se instaall kiya gya 
+dpkg -S /yse.share/doc/rsync
+dpkg -L apache2
+
+
+dpkg -i apache2 
+dpkg -r apache2 
+
+apt-get update
+apt-get install apache2
+
+hamary sary jo b hun downlaod krty hian wo yahan store hoty hain 
+ cd /var/cache/apt/acrcives
+ls
+
+agr hume sary pkgs ko remove krn ho
+ apt-get clean 
+ ls
+
+agr ap install pkg lko search krna chahty hian 
+ apt-cache search apache2
+
+ apt-get remove apache2 -y
+
+
+agr hume  pkg ko remvoe krne k sth uskki configuration file ko b remvoe krna hai
+ apt-get install apache2
+ apt-get purge apache2
+
+
+ aptitude update
+agr ap safley apni machine ko update or patch krna krna chhaty hahain 
+ aptitude safe-upgrade
+ aptitude install apache2
+ aptitude remove apache2
+
+agr ap keis remopo m pkg ko search krna chty hian tu wo b aap kr skty hian 
+aptitude search apache2
+aptitude purge apache2
+ ls  -l /etc/apt/sources.list
+
+adding repository
+add-apt-repository URL of Repo
+apt-key add URL
+apropos apt URL
+
+
+Fedora Base Destribution
+rpm -qa |grep samba 
+rpm -qa
+rpm -qa | wc -l
+rpm -qi Pkgname
+
+
+mount /dev/sr0 /mnt
+df -h
+cd /mnt BAseOs/Pakges
+rpm -qa  | grep zsh 
+rpm -i Pkgname 
+rpm -qa  | grep zsh 
+rpm -e zsh
+show Process 
+rpm -iv Pkgname 
+rpm -ev zsh
+rpm -ivh Pkgname 
+rpm -evh Pkgname 
+
+For Upgrade Pkg
+rpm -Uvh pkgname
+
+Pkgs databae store here {MetaData}
+ls /var/lib/rpm
+agr hume pkg ko cpio convert krna hai 
+cp -r zshpkg name copy /root
+cd /root
+ls
+rpm2cpio pkgname  > zsh.cpio
+
+agr hum eksi rpm k andr ki file ko dekhn achhaty hain 
+rmp2cpi pkgname  |cpio -t
+
+rmp ki madad se agr ap kesi esy pkg ko instrall krna chty hian jis ki dependency hain tu ap install nh i kr skty 
+cd /mnt/AppsStream/Packegs
+ls |gre ypbind
+rpm -ivh ypbind
+
+
+yum install ypbind
+yum list 
+dnf list 
+yum list all
+dnf list all
+dnf list httpd
+yum lisy httpd
+
+Search pkg
+yum search httpd
+dnf search httpd
+
+agr yume dekhna hai koi particulat file ksi pkg m h k nhi 
+yum provides /usr/shre/man/man5/passwd.5.gz
+
+install pkg details 
+yum list installed  
+yum list installed  | wc -l
+dnf list installed  
+
+yum install httpd ftp  vsftpd
+dnf install httpd ftp  vsftpd
+dnf remove httpd
+dnf umdate 
+
+yum grouplist 
+dnf groupinstall "grouppkgname"
+
+cd /etc/yum.repos.d
+ls
+cd /etc/yum.conf
+
+Convert rpm pkg to debian pkg or debian pkg to rpm
+Go to Ubuntu 
+rmp file 
+alien --to-deb pakgname 
+ls
+alien --to-rpm pakgname
+
+Centos
+cd /etc/yum.repos.d
+ls
+install epel repo here
+wget URL eplrepo
+rpm -ivh nameepl
+rpm -evh eplopkgname 
+
+
+
+Install pkg from source code 
+
+downlaod source code of pkg
+
+yum install gcc -y
+install develpmet tools pkgs
+dnf groupinstall "Development Tools"
+
+tar -xvf filename
+cd putty 
+ls
+./configure
+make
+make install 
+
+
+
+
+
+
+
+-------------------------------------------
+				Managing Repositories
+-------------------------------------------
+RedHat 8
+yum install -y httpd
+df -h
+ISO image attach 
+mkdir localrepo
+mount /dev/sr0 /localrepo
+cd localrepo 
+ls
+AppStream ma BseOS has all pkgs 
+cd /etc/yum.repos.d
+vim local.repo
+[BaseOS]
+name=BaseOS-RHEL8
+metadata_expire=-1
+gpgcheck=1
+enabled=1
+baseurl=file:///root/localrepo/BaseOS
+gpgkey=file:///etc/pki/rpm-gpg?RPM-GPG_KEY-redhat-release
+
+[AppStream]
+name=AppStream-RHEL8
+metadata_expire=-1
+gpgcheck=1
+enabled=1
+baseurl=file:///root/localrepo/AppStream
+gpgkey=file:///etc/pki/rpm-gpg?RPM-GPG_KEY-redhat-release
+
+save
+yum repolist all
+yum install httpd
+
+Remove warning of REDHAT
+
+vim /etc/yum/pluginconf.d/seubscription-manager.conf
+enable=0
+
+dnf install vsfdtpd
+
+ap ye sb ek commd se b kr skty hian 
+yum config-manager --add-repo=file://lcoalrepo/BaseOS
+yum config-manager --add-repo=file://lcoalrepo/AppStream
+
+epelRepo configuration
+rm *
+dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+
+dnf install epelrepoURL
+dnf repolist
+yum install -y chromium
+
+yum clean all
+
+
