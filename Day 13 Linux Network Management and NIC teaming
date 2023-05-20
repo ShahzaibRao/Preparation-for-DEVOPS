@@ -1,0 +1,193 @@
+--------------------------------------------
+				Network Management 
+--------------------------------------------
+ifconfig
+
+nmcli dev status
+
+cd /etc/sysconfig/network-scripts/ 
+ls
+cat ifcfg-ens160
+
+add more network in VM
+ls
+nmcli dev status
+
+nmcli dev show
+
+connection details 
+nmcli connection show 
+ifconfig
+ip addr
+ip a
+
+nmcli con show
+nmcli c s
+
+
+nmcli connection up conNAMe
+
+
+create a new connection
+nmcli device status
+nmcli con add type ethernet con-name ens224 ifname ens224
+nmcli connection show
+ip a
+ping IP 
+ifdown ens224
+ifup ens224
+nmcli connection down ens224
+nmcli connection up ens224
+
+
+ls
+cat ens224
+
+set static Ip durinf create network interface
+nmcli con add type ethernet con-name static2 ens256 ip4 192.168.0.50/24 gw4 192.168.0.1
+ls
+ip a
+ping ip
+nmcli con mod static2 ipv4.dns "8.8.8.8"
+
+nmcli con down static2
+nmcli con up static2
+nmcli connection show
+
+
+Stop auto connection
+nmcli con mod static2 connection.autoconnect no 
+
+
+Give permission to normal user to see the network deatils
+nmcli mod static2 connection.permission zybi
+
+nmcli mod static2 connection.permission user:zybi,arslan
+
+relaod all connction 
+systemctl restart NetworkManager
+
+nmcli con edit static2
+
+Remove single entery 
+
+nmcli con mod static2 -ipv4.dns 8.8.8.8
+
+nmcli con del statisc2
+
+
+
+
+
+nmtui
+
+GUI
+
+
+
+------------------------------------------
+				 Assigning IP Address
+------------------------------------------
+nmcli dev status
+cd /etc/sysconfig/network-scripts
+ls
+
+add another network 
+Bridge
+nmcli dev status
+nmcli connection show
+nmcli connection add type ethernet con-name ens224 ifname ens244 ipv4.Address 192.168.0.145/24 ipv4.dns 8.8.8.8 gw4 192.168.0
+1 ipv4.method manual
+ls
+nmcli connection up ens224
+nmcli dv status
+ip a
+
+add anoter network 
+nmcli dev status
+nmcli connection add type ethernet caon-name ens256 ifname ens256
+ls
+nmtui
+edite
+select net name
+nmcli connection up ens256
+ip a
+
+add multiple ip4 
+cat 256natname
+nmcli connection modify ens256 +ipv4.addresses 192.168.0.155/24 +ipd.dns 8.8.4.4
+cat 256natname
+nmcli connction relaod 
+ifup ens256
+nmcli connection up ens256
+ip a
+
+Remove multiple IP from netwrok 
+nmcli connection modify ens256 -ipv4.addresses 192.168.0.155/24 -ipd.dns 8.8.4.4
+nmcli connction relaod 
+nmcli connection up ens256
+ip a
+
+nmcli connection show
+nmcli connction delte ens224
+
+
+For setup ipv6 you need set static hostname
+hostnamectl set-hostname nehraclasses.local
+hostnamectl
+nmcli dev show
+nmcli connection add type ethernet con-name ens224 ifname ens224
+nmcli connection show
+nmcli connection modify ens224 ipv6,addresses 'dfdd:df34:abc1::c0ad:8/64' ipvd.method manual
+ls
+cat filename
+nmcli connction relaod
+nmcli connection up ens224
+ip a
+
+
+
+------------------------------------------------------
+			NIC teaming / Link Aggregation
+------------------------------------------------------
+NIC teaming, also known as Link Aggregation or Bonding, ye ek esi technique jis k madad se hum multiple network interface cards ko ek single logical interface jor dety hain.
+Is technique ki madad se hamari banwidth incress ho jati hai hamri redudancy improve ho jati hai,or hum apni load balancing ko enhjance kr skty hain
+NIC teaming setup m hum multiple Physical Network interface card ko groupd krty hain, or wo ek single entity ki act krta hai,
+
+NIC teaming ko widely istamal kiya jata hai data centers , server environments and networks-intensive application main jahan per high availability chaiye ho , increase krni h  bandwidth, or improved krna ho network performance ko .
+
+
+rpm -qa | grep teamd
+yum install teamd
+nmcli dev status
+nmcli connection show
+
+attach 2 NAT networks
+nmcli dev status
+cd /etc/sysconfig/network-scripts
+ls
+ab hun 3 network create kr n gy 
+nmcli connction add type team con-name team0 ifname team0 confif '{"runner":{"name": "activebackup"}}'
+ls
+nmcli connection show
+ab is m ip adress assign krn gy
+
+nmcli connection modify team0 ipv4.addresses 192.168.227.140/24 ipv4.dns 8.8.8.8 connection.atutoconect yes ipv4.method manual
+cat filenmae 
+nmcli connection add type team-slave con-name team0-port1 ifname ens224 master team0
+
+nmcli connection add type team-slave con-name team0-port2 ifname ens224 master team0
+
+nmcli dev status
+nmcli connection relaod 
+nmcli connection up team0
+nmcli connection up team0-port2
+nmcli connection up team0-port1
+nmcli connection show
+
+ip a
+teamdctl team0 state
+
+ab hum ek interface ko down krk dekhty hian 
+nmcli connection down team0-port1
+teamdctl team0 state
