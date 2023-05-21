@@ -166,3 +166,7 @@ firewall-cmd --zone=publib --add-masquerade
 firewall-cmd --zone=publib --add-forward-port=port=443:proto=tcp:toport=443:toaddr=192.168.100.44 --permanent
 firewall-cmd reload
 firewall-cmd --list-all --zone=public
+
+
+
+recources: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-centos-8
