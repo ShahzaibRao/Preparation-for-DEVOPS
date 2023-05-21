@@ -1,0 +1,168 @@
+-----------------------------------------------------------------------------------------------------------------------------------
+								  What is Firewall? | Why Do We Use Firewall? | Iptables Vs Firewalld 
+-----------------------------------------------------------------------------------------------------------------------------------
+Firewall ek esa system hai jo design kiya gya hai rokne k liye unauthorize access ko. 
+is ki madad se information ko filter krty hain jo internet se hamary private network per aarhi hoti hai, usi k base per firewall us trafic ko block krta hai or allow krta hai.
+Firewall bht important hoti hai bari organization k liye , q k wahan per bari tadad m personal computer or server modod hoty hain, or wahan rakha data critical b ho skta hai, is liye usy protect karna bht zarori hai , is liye hum fire ko different level per impliment krty hain. taky hum apne network ko secure kr skty, or agr koi ek device vulnerable b hoti hai us ki madad se network per mojod dosry server or system ko protect kiya ja sky.
+
+
+snf repolist all
+rpm -aq | grep firewall
+dnf remove firewalld -y
+systemctl status firewald
+
+firewall-cmd --state
+dnf install firewalld -y
+systemctl start firewalld
+systemctl enable firewalld
+systemctl status firewalld
+
+we can see which zone is currently selected as default by typing:
+
+firewall-cmd --get-default-zone
+firewall-cmd --list-all
+
+
+Adding  service to your zones
+
+firewall-cmd --get-services
+
+Adding service to your Zones
+firewall-cmd -get-services
+firewall-cmd --zone=public --add-service=http
+firewall-cmd --zone=home --list-services
+firewall-cmd --get-zones
+
+Changing the Zone of an Interface
+
+firewall-cmd --zone=home --chane-interface=ens33
+firewall-cmd --get-active-zones
+
+Firewall Scripts files locatio 
+cd /usr/lib/firewalld/
+ls -l
+cd services/
+ls -l
+
+Firewall is Managed by files present in /etc/firedwalld/ direcotry
+
+cd /etc/firewalld/
+ls -l
+
+cp /usr/lib/firewalld/services/ssh.xml  /etc/firewalld/services/example.xml
+
+vim /etc/firewalld/services/example.xml
+
+
+firewall-cmd --reload
+
+firewall-cmd --get-services
+firewall-cmd --get-services |grep exapmle
+
+Example of webserver working & how firewall is important fot it
+dnf install httpd -y
+systemctl start httpd
+systemctl enable httpd
+systemctl status httpd
+cd /var/www/html
+vi index.html
+Subhan ALLAH , Beshk ALLAH pak sb se bara hai 
+curl localhost
+ip a
+go browser and past thi ip 
+firewall-cmd --permanent --add-service-http
+firewall-cmd --reload
+firewall-cmd --list-all
+Go to browser and try to access again 
+
+if you want to remove this service 
+firewall-cmd --permanent --remove-service=http
+firewall-cmd --relaod 
+firewall-cmd --list-all
+
+you also add PORT of http in firewalld
+firewall-cmd --permanent --add-port=80/tc
+firewall-cmd --relaod
+firewall-cmd --list-all
+GoTO browser and try to access
+
+
+
+
+if you want manage firewall in GUI mode 
+dnf install -y firewall-config
+
+
+
+Managing Firewall Zones
+firewall-cmd --permanent --zone=public --add-service=http
+firewall-cmd --reload
+firewall-cmd --list-all
+
+Basic concepts of FirewallD is natwork trafic managment
+
+1. Zones
+FirewallD zones are noting but predefine sets of rules .you can see all zone by running 
+ls -l /usr/lib/firewalld/zones/
+cat /user/lib/firewalld/zones/drop.xml
+
+
+
+Understandinf predefine zones
+block - All incoming network connectins rejected.
+dmz - Classic demilitarized zone (DMZ) zone that provided limited access to your LAN and only allow selected incoming prots.
+
+firewall-cmd --get-zones
+ip link show
+or 
+nmcli dev status
+firewall-cmd --get-active-zones
+
+2. Services 
+A services is noting but a list of local ports, protocols, source ports, destinations, and firewall helper modules. SOme exmples
+
+Port -80 
+Services - SSH
+Protocol - ICMP
+
+firewall-cmd --list-all
+or 
+firewall-cmd --list-all --zone=public
+
+list only services 
+firewall-cmd --list-services
+list only ports
+firewall-cmd --list-ports
+
+
+find list of services supported by FirewallD
+
+firewall-cmd --get-services
+firewall-cmd --get-services | grep mysql
+
+ls -l /usr/lib/firewalld/services
+cat /usr/lib/firewalld/services/dns.xml
+
+Add service to  your zone
+add dns services (TCP/UDP/ port 53)
+firewall-cmd --zone=public --add-service=dns --permanent 
+firewall-cmd --zone=public --add-port=53
+
+firewall-cmd --remove-service=dns --permanent
+
+HOW to ADD port Forwarding firewall rules
+Forward TCP 443 to 8080 on the same server
+firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toport=8080 --permanent
+firewall-cmd reload
+firewall-cmd --list-forward-ports
+
+Delete forwarded ports 
+firewall-cmd --zone=public --remove-forward-port=port=80:proto=tcp:toport=8080 --permanent
+firewall-cmd reload
+firewall-cmd --list-forward-ports
+
+
+firewall-cmd --zone=publib --add-masquerade
+firewall-cmd --zone=publib --add-forward-port=port=443:proto=tcp:toport=443:toaddr=192.168.100.44 --permanent
+firewall-cmd reload
+firewall-cmd --list-all --zone=public
