@@ -1,0 +1,196 @@
+
+---------------------------------------------------------
+      Cockpit base web-server Managment tool
+---------------------------------------------------------
+Cockpit wo jaga hai jahan per hum beth per sary system ko manag kr skty hain, kesi b Os pe beth kr,
+ap ksi b device se beth kr server ko man age kr skty hain.
+
+
+
+dnf install -y Cockpit
+dnf install cockpit-machines
+systemctl enable --now cockpit.socket
+systemctl status cockpit.socket
+
+firewall-cmd --list-all
+firewall-cmd --permanent --add-service=cockpit
+firewall-cmd --relaod
+
+cockpit serive na  ho kr socket hai, Q k yahan per hume 2 way communication  krni hti hai , is liye esy socket kehty hain
+
+ip a
+go to browser past ip
+192.168.100.4:9090
+
+
+---------------------------------------------------------
+								  KVM: Kernel Based Virtual Machine
+--------------------------------------------------------
+kernel base virtual machine
+kesy hume apni machine ko Type 1 hypervisor per convert kr skty hain KVM ki  madad se  
+like that Vm-wear V-box
+
+grep -e 'vmx' /proc/cpuinfo
+grep -e 'svn' /proc/cpuinfo
+
+
+dnf install cockpit cockpit-machine -y
+systemctl enable --now cockpit.socket
+systemctl status cockpit.socket
+
+
+firewall-cmd --list-all
+firewall-cmd --permanent --add-service=cockpit
+firewall-cmd --relaod
+
+firewall-cmd --list-all
+
+go to browser past IP
+
+go to terminal of machine
+dnf module install virt -y
+yhan per hum virtulixstion k liye pkgs ko install kr rhy hain 
+
+dnf install virt-install virt-viewer -y
+
+virt-host-validate
+systemctl enable libvirtd.service --now
+systemctl status libvirtd.service
+
+
+Go to browser 
+click Networking 
+	add bridge 
+		select ports enps0s8
+		apply
+
+Go to your terminal 
+	copy iso image in your machine
+	mv ubunu-20.04-deaktop-and64.iso ubuntu.iso 
+	chmod 660 ubuntu.iso
+	mv ubuntu.iso /var/lib/libvirt/images.
+
+
+
+Go to Brower
+click on virtual machines
+			click on create VM
+
+
+-------------------------------
+Install KVM in CentOS
+------------------------------
+# setenforce 0
+
+# uname -a
+
+# cat /etc/CentOS-release
+
+# grep -E 'svm|vmx' /proc/cpuinfo
+
+# yum repolist
+watch this video to configure it in RHEL 7:
+  
+
+ • Configure Local Y...  
+
+# yum install -y qemu-kvm libvirt libvirt-python libguestfs-tools virt-install
+
+# systemctl start libvirtd
+
+# systemctl status libvirtd
+
+# ifconfig
+
+# vim /etc/sysconfig/network-scripts/ifcfg-ens33
+#IPADDR
+#NETMASK
+#GATEWAY
+BRIDGE=virbr0
+
+# cp -p /etc/sysconfig/network-scripts/ifcfg-ens033 /etc/sysconfig/network-scripts/ifcfg-virbr0
+
+# vim /etc/sysconfig/network-scripts/ifcfg-virbr0
+TYPE=BRIDGE
+IPADDR
+NETMASK
+GATEWAY
+DEVICE=virbr0
+
+# ll /usr/lib/sysctl.d/60-libvirtd.conf
+
+# rpm -qf /usr/lib/sysctl.d/60-libvirtd.conf
+
+# vim /usr/lib/sysctl.d/60-libvirtd.conf
+net.ipv4.ip_forward = 1
+
+# /sbin/sysctl -w /usr/lib/sysctl.d/60-libvirtd.conf
+
+# /sbin/sysctl -p /usr/lib/sysctl.d/60-libvirtd.conf
+
+# ifconfig virbr0
+
+# virsh net-edit default
+192.168.1.140
+dhcp range 192.168.1.200 192.168.1.254
+
+# vim /etc/sysconfig/network-scripts/route-virbr0
+192.168.1.0/24 via 192.168.1.140 dev virbr0
+
+# init 6
+
+# systemctl status libvirtd
+
+# ifconfig -a
+
+# osinfo-query os | more 
+
+# osinfo-query os | grep -i centos
+
+# df -hT
+
+# ll /tmp/CentOS-7-x86_64-DVD-1708.iso
+
+# chmod 775 /tmp/CentOS-7-x86_64-DVD-1708.iso
+
+# ll /kvm
+
+# virt-install --name KVMac --description "CENTOS7 for KVMac" --os-type=Linux --os-variant=centos7.0 --ram=1024 --vcpus=1 --disk path=/kvm/KVMac.img,bus=virtio,size=10 --graphics none --console pty,target_type=serial --location /tmp/CentOS-7-x86_64-DVD-1708.iso --network bridge:virbr0 --extra-args console=ttyS0
+
+# virsh list --all
+
+# virsh dominfo KVMac
+
+# virsh shutdown KVMac
+
+# virsh console KVMac
+
+# virsh console KVMac
+
+# virsh list --all
+
+# virsh start KVMac
+
+# virsh console KVMac
+
+# virsh list
+
+# virsh list --all
+
+# virt-clone --connect qemu:///system --original KVMac --name vm3 -f /kvm/KVMac2.img
+
+# virsh list --all
+
+# virsh start KVMac2
+
+# virsh console KVMac2
+
+# ifconfig
+
+# nslookup 8.8.8.8
+
+# netstat -nr
+
+You are done.
+================
+KVM deep understanding  fellow this channel : https://www.youtube.com/@WBITT
