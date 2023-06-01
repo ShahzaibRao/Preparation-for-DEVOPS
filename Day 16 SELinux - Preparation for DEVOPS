@@ -1,0 +1,520 @@
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+								  SELINUX Part-1 | Introduction To Security Enhanced Linux (SELinux) 
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+aaj hum baat krn ki Securty enhance k bary hai, 
+ye kia hai 
+kis concept per kaam karta hai 
+kesy  ye hamari security ko enhance krta hai 
+
+SELinux mandatory access control mechanism ko istamal krty hwy hume Linux kernal per security  impliment krne ka feature deta hai.
+
+
+SELinux modes
+Enforcing
+Permissive
+Disable
+
+cd /tmp
+cal >cal.txt
+ls -lh cal.txt
+su zybi
+cat cal 
+
+su root
+chmood 600
+su zybi
+cat cal 
+
+ls -lZ cal.txt
+
+id
+
+ps -ef |grep ssh
+ps -efZ |grep PSID
+
+getenforce
+setenforace 0
+getenforce
+
+cat /etc/selinux/config
+
+
+
+==================== SELinux Contexts & Process Domain Transition ======================
+SELinux m 4 chezn apko dekhne ko milti hain 
+ROLE 
+TYPE
+USER
+SECURITY LEVEL
+
+ls -Z file.txt
+ls -Zd folder
+
+SELINUX-USER:
+yahan pr user identy hai jis ki madad se hum role or ranges ki madad se multilevel security ko set kr skty hain 
+ap k system m jitne b user hain wo is SELinux ki policay se MAP hngy 
+yahan per  user Maping k throuh hi ye cheez decide hoti hai kis user ko kis session m kis process m kis role k hisab se access diya ja skta hai 
+
+semnage login -l 
+
+
+unconfind ka matlab hai wo kahen b ja skta ahi 
+
+SELINUX-ROLE:
+yu hum use krty hain ROLE base access control k liye , apki machine m jitne b user hain wo is role k through authorize hoty hain,
+ap k Process Domain main run hoty hain,, or roles jo hian wo domain k liye authorize hoty hain ..
+ap esa smjh skty hain k. ROLe domain ko control krta hai or domain Process ko control krta hai. Ap ka role hi ye taay kry ga ap kis domain m ja skty hain , Esa kr ky  hum apny system ko  secure krty hain , man li jiye hamari machine m koi vulnerability  disclose hoti hai, to hamara system privilege escalation se safe rhy ga.
+
+
+SELinux TYPE:
+Type m hume bataty k hume konsa type enforce kra hai. Type hi wo cheez hai jo domain k liye process decide krta hai, k konsi process konsy domain m run hgi.
+
+SELINUX LEVEL:
+
+YE do chezon per kaam krta hai MLS or MCS,
+Multil evel security , Mutli catagotry security 
+ye Pair ki tarhan  kaam krta hai. isko hum sensitivity-category Pair bolty hain
+
+
+
+Domain Transitions:
+hume yu tu pata hai k PROCESS DOMAIN m run krti hain, matlab har process ek specific domain k andr run hgi, zarorat prne pr ye dosry process k sth communicate b kr skti hain ya entry point ka kaam b kr skti hai
+
+
+ls -Z /usr/bin/passwrd
+
+ls -Z /etc/shadow
+
+
+ls
+sl -Z anaconda.cfg
+cd /tmp
+ls -Z program
+ls -ldZ /tmp
+id -Z
+ps -eZ
+semanage login -l 
+sestatus
+getenforce
+terminal 1
+ps -eZ |grep passwd
+trminal 2
+passwd 
+
+terminal 1
+ps -eZ |grep passwd
+
+
+======================SELINUX Target Policy- Confined Process===========================
+
+Targted Policy:
+ye default policy hoti hai fedora m , agr apne targeted policy use kiya hai hai to yaha per ap k apss 2 mdoe hngy , ek domain hga jsy ap confind domain bolen gy , kuch process jin ko target kiya jaye ga wo confind domain m run hngy , or jin process ko target nhi kiy jagy ga wo unconfidn domain  m run hgi.
+unconfind ka mtlb hai k ye domain kahn b kuch b kr skti hain.
+jab k confind ka mtlb hai ye jusy domain k abdr ki chzn ko access krti hain jis k andr wo run ho rhy hngy.
+
+
+ap ki machine m jo b user hain wo unconfined domain m run hty hain, 
+or jo system process hain jin ko INIT ne ya systemD start karta hai wo b unconfined domain m run hoty hain
+
+
+====Confined Processs
+	Confined m hum un process ko rkhty hain , jin ko network k throgh ksi file ko access krne k liye use kiya ja rha ho , network ki madad se ko unauthorize user hamary system ko access kr skta hai or usy damage kr skta hai
+	Tu hum kia krtry hainun sari process ko jis m networking invole hti hai unko confined domain run krwa ty hain .
+
+	LIke that agr HTTP k service hai tu wo just webserver  ki file  ko access kr skti hai baki ksi dosri file ya direcroty ko  ko access ni kr sky gi 
+
+
+
+
+sestatus
+dnf install httpd -y
+systemctl enable --now httpd
+cd /var/www/html
+echo "Hello"> index.html
+
+firewall-cmd --permanent --zone=public --add-service=http
+firewall-cmd --reload
+firewall-cmd --list-all
+
+systemctl restart httpd
+curl localhost
+
+
+wget http:IP
+ls
+
+ls -Z /var/www/html/index.html
+
+ab agr m iska contect change kr k ap ko dikhata hn 
+
+chcon -t samba_share_t /var/www/html/index.html
+ls -Z /var/www/html/index.html
+
+systemctl restart httpd
+wget http:IP
+
+go to browser
+tail /var/log/audit/audit.log
+
+
+getenforce
+setenforace 0
+getenforce
+
+systemctl restart httpd
+wget http:IP
+go to browser
+tail /var/log/audit/audit.log
+
+restorecon -v  /var/www/html/index.html
+
+
+====UnConfined Processs
+
+	wo service jin m network ka use na ho , inko init ya system ,ya kernel ya user start kr skta hai, 
+	agr init start kry ha ye kch esy show hngi, UnConfined_service_t
+	agr kernel stary lry ga tu kch esy ,kernel_t
+	agr user ne kihgi ho UnConfined_t
+	SELinux ki policy k hisab se UnConfined process ko SELinux kuch nhi krta , ab yah per apko wo rule kaam krn just ko apne DAC m define kiye hgy 
+
+
+========
+Kesy hum Targeted policy m confined or UnConfined user ko change kr skty hain 
+
+
+
+bydefault jo user hoty hain unki mapping hume UnConfined dekhne ko milti hai 
+koi b user khn b ja skta hai gay DAC k hisaab se usy permission hai tu 
+lakin agr hume chahen tu user ko confined b kr skty hian , or unki privilige ko limit kr skty hain .
+
+
+
+semanage login -l 
+agr hume ye dekhn hai koon kon se user hain hmry selinux m 
+seinfo -u
+
+yum install setools-console
+seinfo -u
+
+yahan per mojod har user ki alg lag capabilites hain , agr hume inki permission m change krna required hga tu hun Boolean ki madad se wo b kr skty hain..
+
+current state ho boolean 
+
+semanage boolean -l 
+getsebool -a
+
+agr hune SELinux k role dekhne hain 
+seinfo -r
+
+useradd example.user
+passwd example.user
+
+
+ssh example.user@localhost
+id -Z
+
+
+agr ap ksi user ko confined  krna chahty hain tu ap add krty time e esa kr skty hian 
+seinfo -u
+useradd -Z staff_u example.user1
+passwd example.user1
+
+
+ssh example.user1@localhost
+id -Z
+
+agr hume pehly se modjob user ko confined krna ho tu hum  esa krn hoga 
+
+semanage login -l 
+
+semanage login -m -s user_u -r s0 __default__
+semanage login -l 
+
+
+useradd example.user2
+passwd example.user2
+
+
+ssh example.user2@localhost
+id -Z
+
+ps -axZ
+
+
+agr hum ksi user ko admin access dena per  usy confined krna chahty hain
+
+ye user by default SSH nhi kr skta is liye esy iski perssion change krn a hgi 
+getsebool -a | grep ssh_sysadm_login
+semanage boolean -l | grep ssh_sysadm_login
+
+setsebool -P ssh_sysadm_login
+semanage boolean -l | grep ssh_sysadm_login
+
+
+adduser -G wheel -Z sysadm_u example.user3
+passwd example.user3
+
+
+ssh example.user3@localhost
+id -Z
+
+
+usermod -G wheel -Z sysadm_u exaple.user2
+
+semanage login -l | grep exapmle.user
+
+ssh example.user3@localhost
+id -Z
+su -i
+id -Z
+
+su root
+setsebool -P ssh_sysadm_login off
+
+semanage login -l | grep ssh_sysadm_login
+ssh example.user3@localhost
+
+cat /etc/selinux/config
+
+
+
+================
+For Temporay changes
+getenforce
+setenforce 0
+getenforce
+
+For Permament Changes
+cat  /etc/selinux/config
+
+sestatus
+getenforce
+setenforce 1
+vim /etc/selinux/config
+
+SELINUX=disable
+sestatus
+
+vim /etc/selinux/config
+
+SELINUX=enforcing
+sestatus
+
+==== ab hum dekhty hain kia hain Boolean 
+Boolean Policy ka part hoty hain jo run time ya booting k time pr kaam krna start kr dty hain , hum inki  madad se selinux m changes krty hain , chahy hume policy likhna na aati h0 ya policy m changins krna na aty hn 
+agr ap boolean ko dekhna chahty hain 
+semanage boolean -l 
+getsebool -a
+ 
+ setsebool PRESS TAB
+
+
+semanage boolean -l |grep ftp_home_dir
+getsebool -a | grep ftp_home_dir
+getsebool ftp_home_dir
+
+agr hume apny ksi boolean ki state ko change krna ho tu hume 
+getsebool httpd_can_network_connect_db
+setsebool httpd_can_network_connect_db on
+getsebool httpd_can_network_connect_db
+
+agr hum machine ko reboot krn gy tu ye  phir se off ho jaye ga Q k ye temporay changes thy.
+agr hume esy permanent change krna ho tu 
+
+setsebool -P httpd_can_network_connect_db on
+getsebool httpd_can_network_connect_db
+
+
+semanage boolean -l | grep httpd_can_network_connect_db
+
+
+==== SELInux context | Labling or relabling =====
+
+jab b koi file ya service run hoti hain us ek selinux context assign  hota hai Like that
+su zybi 
+touch file
+
+
+ls -Z file
+ab jo information hum dekh rhy hain esy e LABEL kehty hain ya selinux context khty hain
+First Linux user se realted information deti hai 
+Second us k ROLE se realted information deti hai 
+Third us ki TYPE se realted information deti hai
+	TYPE se hume file or process related infrmation b  milti hai
+
+Fourth SECURITY LEVEL se related information deti hai 
+
+
+
+#chcon 
+is commad ki madad se hum level ko temporary set kr skty hain 
+
+ls -Z file
+ab is file context change krata hn 
+chcon  -t httpd_sys_content_t file
+ls -Z file
+
+restorecon -v file
+ls -Z file
+res
+cd /tmp
+mkdir testdir
+ls -ldZ testdir
+cal > /tmp/testdir/cal
+ls -Z /tmp/testdir/cal
+
+is file per b parrent directory ka context apply ho hogya hai ,,
+agr hume recursivly  in saron ka context change krna ho tu 
+chcon  -R -t httpd_sys_content_t /testdir/
+ls -Z /tmp/testdir/cal
+ls -Z /tmp/testdir/
+
+Ye sb changes temporary hoty hain 
+
+su root
+touch /etc/file
+
+semanage fcontext -a -t samba_share_t /etc/file
+
+ls -Z /etc/file
+
+hume file per abi ab wohi context show ho raha h Q k fcontext se humne is ki entry SELINUX k pilicy file m ki hai 
+
+tail /etc/selinux/targeted/caontext/files/file_contexts.local
+ab agr machine reboot hogi ya aap touch ./autorelable commanf ko fire krn gy tu ye context is file per apply ho jaye ga.
+
+restorecon -v /etc/file
+ls -Z /etc/file
+
+
+cd
+mkdir web
+cd web
+touch file{1..3}
+ls -dZ web
+ls -Z /web/file*
+
+agr hum is sb per ek sth selinux context apply krna chahta hn tu 
+semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
+ls -dZ web
+
+abi wo hi show ho rha h Q k is command se is ki entry selinux ki pollicy m is ki entry ki hai 
+tail /etc/selinux/targeted/caontext/files/file_contexts.local
+restorecon -v /web/*
+ls -dZ web
+
+
+agr hume policy wali file entry remove krni hi 
+semanage fcontext -d "/web(/.*)?"
+tail /etc/selinux/targeted/caontext/files/file_contexts.local
+semanage fcontext -f /etc/file
+tail /etc/selinux/targeted/caontext/files/file_contexts.local
+restorecon -v /web/*
+restorecon -v /etc/file
+ls -Z /etc/file
+
+
+
+
+
+
+#information gathering tools  and Multilevel security tools
+
+wo utility tools ya commands ji ki ko hum SELinux ki information gather krne k liye use krty hn,
+
+
+
+
+#Multi-Level Security ( MLC | MCS )
+
+ye ki multilevel security se ye ek security scheme hai ji Bell-La Padula Menadatory Access Model ko enforce krne ka kaam krti hai.
+
+MLC main user or process ko subject ki tarhan Treat kiya jata hai, or files or devices ko objects ki trhan treat kiya jata hai.
+Subject or Object k samne ek Security Level define hota hai jis k  LAST m hume ko S0 C1023 kar k jo dikhta hai .
+
+
+Is k 4 level hoty hain 
+Unclassifed 
+Confidential 
+Secret
+Top Secret
+
+Unclassifed 	===> Isko sb log access kr skty hian 
+Cinfidential	===> ab iska security ka level or thora increas kr diya jata hai or har ksi k access ko specficed kr diya jata hai 
+Secret   		===>  is Level per access krne waly log selected e hngy 
+Top Secret 		===> ab just ek ya do log ko e access hoga
+
+Unclassifed level banta hai security ki sensitivity se se 
+
+sensitivity or catagory ka pear hota hai , or unki ranges hoti hain, sensitivity ki range hoti hai s0 se s15 tak , or catagory ki rang hoti hai c0 se ly kr c1023
+
+agr ap ka level s0c0 hai tu ye Unclassifed level hai 
+agr ap ka level s1c1 hai tu ye Cinfidential level hai 
+
+
+id -Z
+
+sestatus
+ab hu,e ye selinux-policy-mls k pkg install krna hai 
+yum install selinux-policy-mls -y
+seinfo
+
+# avcstat
+
+seinfo
+seinfo -adomain -x |wc -l
+seinfo -adomain
+#sesreach --role_allow -t unconfined_r 
+
+sesearch --allow 
+
+sesearch --dontaudit 
+
+
+sestatus 
+
+vim /etc/selinux/config
+
+SELINUX=permissive
+
+SELINUXTYPE=mls
+getenforce
+setenforce 0
+
+ab hun auto relable wali file create krty hain 
+touch /.autorelabel
+echo "-F" >> /.autorelabel
+ ab hume apni machine ko reboot krn gy 
+ or jesy e hamri machine reboot hgi SELInux ki relabling start ho jaye gi 
+
+
+sestatus 
+
+useradd -Z user_u jhon
+passwd jhon
+
+su - jhone
+id -Z
+
+su root
+id -Z
+
+semanage login -l 
+ 
+getenforce
+ab agr hum SELinux ko enforce kr dty hain tu dekhen kia hota hai 
+setenforce 1
+getenforce 
+
+vim /etc/selinux/config
+SELINUX=enforceing
+save 
+no read and no write 
+ab yahn jo root user hain wo changing nhi kr pa raha.. ab yahn per MLS kaam kr rha hai 
+
+useradd vikas
+init 6
