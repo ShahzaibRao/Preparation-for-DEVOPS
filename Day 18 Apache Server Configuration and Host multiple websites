@@ -1,0 +1,114 @@
+-----------------------------------------------------------------------------------------------------------------------------------
+							Apache HTTP/HTTPS Server Configuration | Host Multiple Websites On a Server Using SSL
+-----------------------------------------------------------------------------------------------------------------------------------
+dnf install httpd
+cd /var/www/html
+rm -rvf *
+echo "Shuru ALLAH pak k pak naam se" > index.html
+systemctl enable --now httpd
+systemctl status httpd
+
+by default jab ap bina SSL ki server ko deply lkty hain ye to PORT 80 per kaam krta hai
+
+firewall-cmd --zone=public --add-service=http --permanent
+firewall-cmd --reaload
+firewall-cmd --list-all
+
+curl localhost
+cutl http://IP
+go to browser
+
+go to free templete  and downlaod for use
+
+wget URL
+unzip it
+cd foldername/
+cp -r * ..
+
+systemctl restart httpd
+cutl localhost
+go to browser
+
+init 0
+=====================================================================
+Go to new instance
+
+
+Ab Hum ye dekhnty hain k kesy hum Multiple Websites ko HOST krty hain or SSL ka b use dekhn  gy hum
+
+sb se pehly hum static hostname set krty hain 
+hostnamectl set-hostname www.shahzaib.com
+hostnamectl
+logout
+login
+
+ab hum HTTPD or OPENSSL k Pkg ko install krn gy 
+dnf install -y httpd openssl mod_ssl
+
+ab hum self sign certificate generate krty hain 
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt
+
+
+ll
+copy both files 
+cp -r localhost.crt /etc/pki/tls/certs/
+cp -r localhost.key /etc/pki/tls/private
+
+ab hum SSL ki setting dekhty hain 
+vim /etc/httpd/conf.d/ssl.conf
+cat /etc/httpd/conf.d/ssl.conf | grep localhost
+
+agr apne koi or naam use kiya hai tu ap wo naam yahan per mention krn gy 
+httpd -t
+apachectl configtest
+
+Q k hume yahan per  multiple webiste ko host krna hai tu hume ek file genarate krna hogi  
+vim /etc/httpd/conf.d/httpd.conf
+
+hum yahan per Virtual host ka concept use kr rhy hain
+<VirtualHost *:443>
+SSLEngine on
+SSLCertificateFile /etc/pki/tls/certs/localhost.crt
+SSLCertificateKeyFile /etc/pki/tls/private/localhost.key
+ServerName www.shahzaib.com
+DocumentRoot /var/www/html/website1
+</VirtualHost>
+
+<VirtualHost *:443>
+SSLEngine on
+SSLCertificateFile /etc/pki/tls/certs/localhost.crt
+SSLCertificateKeyFile /etc/pki/tls/private/localhost.key
+ServerName www.shahzaib.net
+DocumentRoot /var/www/html/website2
+</VirtualHost>
+
+
+httpd -t
+
+cd /var/www/html
+ls
+
+mkdir website1
+mkdir website2
+ls -ldZ website2
+ls -ldZ website1
+
+PAST codes for websites
+firewall-cmd --permanet --add-service=https --zone=public
+firewall-cmd --reaload
+firewall-cmd --list-all
+
+systemctl enable --now httpd
+systemctl status httpd
+
+
+Q k hum ip adress ki madad se host name ko resolve krn gy is hume .etc.hosts ki file m iski entry krna hgi 
+
+vim /etc/hosts
+192.168.100.5 www.shahzaib.com
+192.168.100.5 www.shahzaib.net
+systemctl restart httpd
+go to browser
+https:www.shahzaib.com
+https:www.shahzaib.net
