@@ -1,0 +1,67 @@
+2. Now install squid packages from yum repository in the server.
+# yum install -y squid*
+
+3. Start  the squid service and enable it.
+# systemctl start squid
+# systemctl enable squid
+
+4. Add the squid port in firewall and restart it.
+# firewall-cmd --permanent --add-port=3128/tcp
+# firewall-cmd --reload
+
+5. Note down your server local  ip address.
+# ifconfig
+
+6. Now make chages in the configuration file of squid as shown below.
+# vim /etc/squid/squid.conf
+acl localnet src 192.168.1.10/24
+http_access allow localnet
+
+7. If you want to block some of the specific website in your LAN then make the entry of blocksites file in squid configuration file.
+# vim /etc/squid/squid.conf
+acl blocksites url_regex "/etc/squid/blocksites"
+http_access deny blocksites 
+
+Make the entry of block sites in /etc/squid/blocksites to block the sites.
+# vim /etc/squid/blocksites
+
+.facebook.com
+.twitter.com
+.flipkart.com
+
+8. Restart the squid service.
+# systemctl restart squid
+
+9. Now open firefox and make required changes.
+# firefox
+Firefox -) Settings -) Preferences -) Advance -) Network -) Connections -) Select Manual Proxy Conf -) Provide the IP of your server which you have noted down & Port Number (3128).
+
+10. Open firefox and test whether caching imporves your surffing experience & whether you can still access the blocked sites or not?
+---------------------------------------------------
+You can also block files with the help of squid servers.
+Make rules for the same in configuration file.
+# vim /etc/squid/squid.conf
+acl blockfiles urlpath_regex "/etc/squid/blockfiles.acl"
+http_access deny blockfiles
+
+Now open /etc/squid/blockfiles.acl in vi editor and make an entry for the files to be blocked.
+\.torrent$
+\.mp3.*$
+\.3gp.*$
+\.mp4.*$
+---------------------------------------------------
+Set work hours.
+# vim /etc/squid/squid.conf
+acl work_hours time 10:00-19:00
+http_access deny work_hours
+
+Set download speed.
+# vim /etc/squid/squid.conf
+acl speedcontrol src 192.168.1.109/24
+delay_pools 1
+delay_class 1 2
+delay_parameters 1 524288/524288 52428/52428
+delay_access 1 allow speedcontrol
+
+---------------------------------------------------
+Thanks
