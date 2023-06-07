@@ -1,0 +1,98 @@
+-----------------------------------------------------------------------------------------------------------------------------------
+							Domain Name Server (DNS) Configuration in Linux | Domain Name Server
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+DNS ko configure krne k lioye hum BIND PKg k ause krty hain 
+
+hostnamectl set-hostname ns1.raoshahzaib.local
+hostnamectl
+yum install bind bind-utils -y
+
+systemctl start named
+systemctl enable named
+
+nano /etc/named.conf
+//listen-on port 53 { 127.0.0.1; };
+//listen-on-v6 port 53 { ::1; };
+allow-query     { localhost;192.168.122.0/24; };
+nano /etc/named.conf
+
+//Forward Zone
+zone "raoshahzaib.local" IN { 
+
+           type master;  
+           file "raoshahzaib.local.db"; 
+           allow-update { none; };  
+
+};
+
+//Reverse Zone
+zone "122.168.192.in-addr.arpa" IN { 
+
+             type master;  
+             file "192.168.122.db";             
+             allow-update { none; };
+
+};
+
+nano /var/named/raoshahzaib.local.db
+$TTL 86400
+@   IN  SOA     ns1.raoshahzaib.local. root.raoshahzaib.local. (
+                                              3           ;Serial
+                                              3600        ;Refresh
+                                              1800        ;Retry
+                                              604800      ;Expire
+                                              86400       ;Minimum TTL
+)
+
+;Name Server Information
+@       IN  NS      ns1.raoshahzaib.local.
+
+;IP address of Name Server
+ns1       IN  A       192.168.122.14
+
+;A - Record HostName To Ip Address
+www     IN  A       192.168.122.101
+
+;CNAME record
+ftp     IN CNAME        www.raoshahzaib.local.
+
+
+nano /var/named/192.168.122.db
+
+$TTL 86400
+@   IN  SOA     ns1.raoshahzaib.local. root.raoshahzaib.local. (
+                                       3           ;Serial
+                                       3600        ;Refresh
+                                       1800        ;Retry
+                                       604800      ;Expire
+                                       86400       ;Minimum TTL
+)
+
+;Name Server Information
+@         IN      NS         ns1.raoshahzaib.local.
+
+;Reverse lookup for Name Server
+14       IN  PTR     ns1.raoshahzaib.local.
+
+;PTR Record IP address to HostName
+101      IN  PTR     www.raoshahzaib.local.
+
+named-checkconf /etc/named.conf
+
+named-checkzone raoshahzaib.local /var/named/raoshahzaib.local.db
+named-checkzone 122.168.192.in-addr.arpa /var/named/192.168.122.db
+systemctl restart named
+firewall-cmd --permanent --add-port=53/udp
+firewall-cmd --reload
+
+nano /etc/resolv.conf
+nameserver 192.168.122.100
+
+
+dig www.raoshahzaib.local 
+Or
+
+dig ns1.raoshahzaib.local
+dig -x 192.168.1.100
