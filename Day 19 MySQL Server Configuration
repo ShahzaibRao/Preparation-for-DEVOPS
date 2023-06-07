@@ -1,0 +1,47 @@
+
+su zybi
+
+ap jis b user se Mysql server ko configure krne wlay hain uski entry  sudo user m hni chahiye taky wo apna kam aasani se kr sky
+dnf repolist all
+
+dnf -y install @mysql
+systemctl enable mysql.service --now
+systemctl status mysql.service
+
+ab hume Mysql server per passwors set krn gy
+
+mysql_sercure_installation
+y
+0
+y
+y
+y
+y
+
+ab hum mysql m login krty hain 
+
+mysql -u root -p 
+mysql> help
+
+
+ab hum yahan per per ek user create krty hain taky hum root se login na ho kr us user se Mysql m login kr sken 
+
+CREATE DATABASE shahzaib;
+
+CREATE USER 'shahzaib@'localhost' IDENTIFIED BY 'P@$$w0rd';
+
+GRANT ALL ON shahzaib.* to 'shahzaib@'localhost';
+
+ye hum changes load ho jaen is liye hume database ko Plush krna hoga
+FLUSH PRIVILEGEs;
+exit
+
+
+mysql -u shahzaib -p 
+
+show databases;
+\h
+\c
+
+
+ap GUI k through b isko manager kr skty hain uski apko phpmyadmin ka use lena hota hai
